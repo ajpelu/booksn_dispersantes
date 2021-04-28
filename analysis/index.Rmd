@@ -8,6 +8,6 @@ editor_options:
   chunk_output_type: console
 ---
 
-Notebook about analysis of bird census data for Book SN. 
+Notebook about analysis of bird census data for Book SN  
 
 - Click on this [link](prepare-data.html) to see how the data were cleaning 
