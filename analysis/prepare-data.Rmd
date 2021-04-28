@@ -1,0 +1,18 @@
+---
+title: "prepare-data"
+author: "Antonio J Perez-Luque"
+date: "2021-04-28"
+output: workflowr::wflow_html
+editor_options:
+  chunk_output_type: console
+---
+
+## Introduction 
+
+We have two datasets of birds census  
+
+
+```{r}
+
+```
+

@@ -9,3 +9,5 @@ editor_options:
 ---
 
 Welcome to my research website.
+
+- Click on this [link](prepare-data.Rmd) to see how the data were cleaning 
