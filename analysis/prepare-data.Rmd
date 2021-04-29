@@ -7,12 +7,133 @@ editor_options:
   chunk_output_type: console
 ---
 
-## Introduction 
+## Data sources
 
-We have two datasets of birds census  
+Data coming from two sources: 
 
+  - *Old bird censuses* provided by R. Zamora, consists in bird censuses in three locations: oak population (1700 masl); juniper-scrubland (2230 masl) and summit environments (3200 masl). Range temporal cover from 1981 to 1985. 
+  
+  - *Obsnev bird censuses* provided by [*OBSNEV*](https://obsnev.es/), realized in several transects distributed along Sierra Nevada. Temporal range from 2008 to 2020. The data were downloaded from new information system of OBSNEV (*i.e.* PostgreSQL [db01.obsnev.es](db01.obsnev.es))
+  
+All data are stored in the folder `/data_raw` 
 
-```{r}
+### Notes for Old bird censuses (in Spanish)
 
+- File `RObledal año 1981 RZAves_SN_10ha.xls`: 
+
+  - habitat: oak woodlands (*Q. pyrenaica*)
+  - elevation: 1700 masl 
+  - year: 1981 
+  - variable: bird abundance monthly aggregated (ind / 10 ha)
+  - sample size: n = 3 (may, june, july)
+  - notes: The data aren't the original bird censuses but are monthly aggregated
+
+- File `Enebral año 1985 RZAves_SN_10ha.xls`
+
+  - habitat: juniper-scrubland
+  - elevation: 2300 masl 
+  - year: 1985
+  - variable: bird abundance monthly aggregated (ind / 10 ha)
+  - sample size: n = 3 (may, june, july)
+  - notes: The data aren't the original bird censuses but are monthly aggregated
+
+- File `Aves_SN_meses_reproduccion.xls` 
+
+  - habitat: jseveral habitats. We selected juniper-scrubland and summit environments 
+  - elevation: 2300 and 3200 masl 
+  - year: 1984 (juniper); 1982 (summit environment)
+  - variable: raw bird abundance. For juniper ind / 10.2 ha; and for summit ind / 20 ha. 
+  - sample size: n = 9 transects (juniper) and 6 transects (juniper) during may-july
+  - notes: Original bird censuses
+
+## Prepare Old bird censuses 
+```{r load-pkgs, message=FALSE}
+library("tidyverse")
+library("here")
+library("readxl")
+library("DT")
 ```
+
+
+```{r oak-data}
+robledal1981 <- read_excel(here::here("data/data_raw/RObledal año 1981 RZAves_SN_10ha.xls")) %>% 
+  pivot_longer(cols= mayo_1981:julio_1981, names_to="fecha") %>% 
+  separate(fecha, into = c("mes", "year"), sep="_", remove = FALSE) %>% 
+  rename("especie" = Aves, "den" = value) %>% 
+  mutate(year = as.numeric(year), 
+         habitat = "robledal", 
+         cota = 1700,
+         mes = case_when(
+           mes == "mayo" ~ as.numeric(5), 
+           mes == "junio" ~ as.numeric(6),
+           mes == "julio" ~ as.numeric(7)), 
+         fecha = format(as.Date(paste(year, mes, "01", sep="-")), format="%Y-%m-%d")) 
+
+head(robledal1981)
+```
+
+
+```{r, juniper85-data}
+enebral1985 <- read_excel(here::here("data/data_raw/Enebral año 1985 RZAves_SN_10ha.xls")) %>%   pivot_longer(cols= mayo_1985:julio_1985, names_to="fecha") %>% 
+  separate(fecha, into = c("mes", "year"), sep="_") %>% 
+  rename("especie" = Aves, "den" = value) %>% 
+  mutate(year = as.numeric(year), 
+         habitat = "enebral", 
+         cota = 2230, 
+         mes = case_when(
+           mes == "mayo" ~ as.numeric(5), 
+           mes == "junio" ~ as.numeric(6),
+           mes == "julio" ~ as.numeric(7)),
+         fecha = format(as.Date(paste(year, mes, "01", sep="-")), format="%Y-%m-%d")) 
+
+head(enebral1985)
+```
+
+
+```{r, juniper84-data}
+enebral1984 <- read_excel(here::here("data/data_raw/Aves_SN_meses_reproduccion.xlsx"),
+                           sheet = "2230") %>% 
+  rename("especie" = Ave, "den" = `Número`) %>% 
+  mutate(den = round(den*(10/10.2),2),
+         habitat = "enebral", 
+         cota = 2230, 
+         mes = lubridate::month(Fecha), 
+         year = lubridate::year(Fecha), 
+         Fecha = strftime(Fecha, format="%Y-%m-%d")) %>% 
+  rename(fecha = Fecha)
+
+head(enebral1984)  
+```
+
+```{r, summit82-data}
+cumbres1982 <- read_excel(here::here("data/data_raw/Aves_SN_meses_reproduccion.xlsx"),
+                           sheet = "3200") %>% 
+  rename("especie" = Ave, "den" = `Número`) %>% 
+  mutate(den = round(den*(10/20),2),
+         habitat = "altas cumbres", 
+         cota = 3200, 
+         mes = lubridate::month(Fecha), 
+         year = lubridate::year(Fecha),
+        Fecha = strftime(Fecha, format="%Y-%m-%d")) %>% 
+  rename(fecha = Fecha)
+
+head(cumbres1982)
+```
+
+Bind old data 
+
+```{r bind-old-data}
+old_census <- bind_rows(cumbres1982, enebral1984, enebral1985, robledal1981)
+datatable(old_census)
+```
+
+
+
+
+
+
+
+
+
+
 
