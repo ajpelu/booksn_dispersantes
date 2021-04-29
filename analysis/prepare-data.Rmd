@@ -6,6 +6,12 @@ output: workflowr::wflow_html
 editor_options:
   chunk_output_type: console
 ---
+```{r, set-global-options}
+knitr::opts_chunk$set(echo = TRUE, 
+                      warning = FALSE, 
+                      message = FALSE)
+```
+
 
 ## Data sources
 
@@ -17,7 +23,8 @@ Data coming from two sources:
   
 All data are stored in the folder `/data_raw` 
 
-### Notes for Old bird censuses (in Spanish)
+## Prepare Old bird censuses 
+### Notes for Old bird censuses
 
 - File `RObledal año 1981 RZAves_SN_10ha.xls`: 
 
@@ -46,7 +53,8 @@ All data are stored in the folder `/data_raw`
   - sample size: n = 9 transects (juniper) and 6 transects (juniper) during may-july
   - notes: Original bird censuses
 
-## Prepare Old bird censuses 
+
+
 ```{r load-pkgs, message=FALSE}
 library("tidyverse")
 library("here")
@@ -110,7 +118,7 @@ cumbres1982 <- read_excel(here::here("data/data_raw/Aves_SN_meses_reproduccion.x
                            sheet = "3200") %>% 
   rename("especie" = Ave, "den" = `Número`) %>% 
   mutate(den = round(den*(10/20),2),
-         habitat = "altas cumbres", 
+         habitat = "cumbres", 
          cota = 3200, 
          mes = lubridate::month(Fecha), 
          year = lubridate::year(Fecha),
@@ -127,13 +135,109 @@ old_census <- bind_rows(cumbres1982, enebral1984, enebral1985, robledal1981)
 datatable(old_census)
 ```
 
+## Prepare OBSNEV bird censuses 
+
+- Raw data were downloaded from OBSNEV information system. The downloaded tables were: 
+`contactos_paseriformes.csv`; `dicc_especies.csv`; `geo.csv`; `visitas.csv`. 
+
+- The protocol sampling number for passerine in the database is 5. 
+
+- Select the three locations: "Cortijo del Hornillo" (*oak*), "Campos de Otero" (*juniper*), and "Aguas Verdes" (*summits*). 
+
+- Filter data only for may, june, july 
+
+- Filter out data contacted over 30 m 
+
+- Select only the taxonomic level = species (level > 6) 
+
+```{r read-obsnev-tables}
+contactos <- read_csv(here::here("data/data_raw/contactos_paseriformes.csv")) %>% 
+  dplyr::select(-fcreacion, -fmodificacion)
+
+dicc_sp <- read_csv(here::here("data/data_raw/dicc_especies.csv")) %>% 
+  dplyr::select(idesp, nombre_cientifico, nivel)
+
+# El protocolo de paseriformes es el 5
+dicc_visita <- read_csv(here::here("data/data_raw/visitas.csv"), 
+                        col_types = 
+                          cols(.default ="?", 
+                               idgeo = col_character(), 
+                               fvisita = col_datetime(format="%Y-%m-%d %H:%M:%S"))) %>%
+  filter(protocolo == 5) 
+  
+dicc_geo <- read_csv(here::here("data/data_raw/geo.csv"), 
+                     col_types = cols(.default ="?", 
+                               longitud_m = col_double()))
+
+visita_geo <- 
+  dicc_visita %>% inner_join(dicc_geo, by = "idgeo") %>% 
+  dplyr::select(idvisitas, fvisita, nombre, longitud_m) 
+
+dfraw <- contactos %>% 
+  inner_join(visita_geo, by = "idvisitas") %>% 
+  inner_join(dicc_sp, by = "idesp") %>% 
+  mutate(year = lubridate::year(fvisita), 
+         mes = lubridate::month(fvisita))
+
+df <- dfraw %>% 
+  filter(nombre %in% c("Cortijo del Hornillo", "Campos de Otero", "Aguas Verdes")) %>% 
+  mutate(habitat = recode(nombre, 
+                          "Campos de Otero" = "enebral",
+                          "Cortijo del Hornillo" = "robledal",
+                          "Aguas Verdes" = "cumbres")) %>%
+  mutate(cota = case_when(
+    habitat == "enebral" ~ 2230, 
+    habitat == "robledal" ~ 1700,
+    habitat == "cumbres" ~ 3200
+  )) %>% 
+  mutate(year = lubridate::year(fvisita), 
+         mes = lubridate::month(fvisita),
+         fecha = strftime(fvisita, format="%Y-%m-%d")) %>% 
+  filter(mes %in% c(5,6,7)) %>% 
+  filter(desplazamiento < 31) %>% 
+  filter(nivel > 6) 
+
+head(df)
+```
+
+- Aggregated data to get the sum of all contacts for a specie recorded in the same visit of the same transect
+
+- Remove an error "Prunus avium" in species codification 
+
+```{r, compute-abundance-obsnev}
+dfab <- df %>% 
+  filter(nombre_cientifico != "Prunus avium") %>% 
+  group_by(nombre_cientifico, fecha, year, mes, longitud_m, nombre, habitat, nivel, cota) %>%
+  summarise(total_ind = sum(numero)) %>%  
+  mutate(den = round((total_ind * 10000 * 10 / (longitud_m * 60)),2)) %>% 
+  ungroup() %>% 
+  rename(especie = nombre_cientifico) %>% 
+  dplyr::select(-nivel, -longitud_m, -nombre, -total_ind)
+```
+
+- Join old and new data, and export data. Be caution with this data, since it includes some species that specialists indicated to remove them. 
+- Export data as `birds.csv` 
 
 
+```{r see-all-data}
+birds <- bind_rows(old_census, dfab)
+datatable(birds)
+write_csv(birds, here::here("data/birds.csv"))
+```
+
+- Filter out species. After consultation of specialist we'll remove the following species: 
+
+```{r, remove-sp}
+remove_sp<- c("Acrocephalus dumetorum", "Alectoris rufa", "Columba palumbus", "Corvus corax", "Ficedula albicollis", "Himantopus himantopus", "Ixobrychus sturmii", "Luscinia svecica", "Monticola solitarius","Oceanodroma leucorhoa", "Prunus avium", "Puffinus yelkouan", "Pyrrhocorax pyrrhocorax")
+
+passerine  <- birds %>% 
+  filter(!especie %in% remove_sp) 
+
+datatable(passerine)
+
+write_csv(passerine, here::here("data/passerine.csv"))
+```
 
 
-
-
-
-
-
+  
 
