@@ -54,7 +54,6 @@ All data are stored in the folder `/data_raw`
   - notes: Original bird censuses
 
 
-
 ```{r load-pkgs, message=FALSE}
 library("tidyverse")
 library("here")
@@ -128,7 +127,7 @@ cumbres1982 <- read_excel(here::here("data/data_raw/Aves_SN_meses_reproduccion.x
 head(cumbres1982)
 ```
 
-Bind old data 
+- Bind old data
 
 ```{r bind-old-data}
 old_census <- bind_rows(cumbres1982, enebral1984, enebral1985, robledal1981)
@@ -216,11 +215,26 @@ dfab <- df %>%
 ```
 
 - Join old and new data, and export data. Be caution with this data, since it includes some species that specialists indicated to remove them. 
+
 - Export data as `birds.csv` 
+
+- Recode especies according to: 
+
+  - Acanthis cannabina to Carduelis cannabina; 
+  - Parus caeruleus to Cyanistes caeruleus; 
+  - Parus ater to Periparus ater; 
+  - Phoenicurus ochuros to Phoenicurus ochruros; 
 
 
 ```{r see-all-data}
-birds <- bind_rows(old_census, dfab)
+birds <- bind_rows(old_census, dfab) %>% 
+  mutate(especie = case_when(
+    especie == "Acanthis cannabina" ~ "Carduelis cannabina",
+    especie == "Parus caeruleus" ~ "Cyanistes caeruleus",
+    especie == "Parus ater" ~ "Periparus ater", 
+    especie == "Phoenicurus ochuros" ~ "Phoenicurus ochruros", 
+    TRUE ~ especie
+  ))
 datatable(birds)
 write_csv(birds, here::here("data/birds.csv"))
 ```
