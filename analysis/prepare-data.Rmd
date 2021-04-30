@@ -241,17 +241,31 @@ datatable(birds)
 write_csv(birds, here::here("data/birds.csv"))
 ```
 
+- Generate an abbreviation for the especies composed by the three first characters of Genus and the three first characters of species, separated by a dot. 
+
 - Filter out species. After consultation of specialist we'll remove the following species: 
 
 ```{r, remove-sp}
 remove_sp<- c("Acrocephalus dumetorum", "Alectoris rufa", "Columba palumbus", "Corvus corax", "Ficedula albicollis", "Himantopus himantopus", "Ixobrychus sturmii", "Luscinia svecica", "Monticola solitarius","Oceanodroma leucorhoa", "Prunus avium", "Puffinus yelkouan", "Pyrrhocorax pyrrhocorax")
 
 passerine  <- birds %>% 
-  filter(!especie %in% remove_sp) 
+  filter(!especie %in% remove_sp) %>% 
+  separate(especie, c("genus", "sp")) %>% 
+  mutate(g.ab = substr(genus, 1, 3), 
+         s.ab = substr(sp, 1, 3)) %>% 
+  unite("sp.abb", g.ab:s.ab, sep=".") %>% 
+  unite("especie", genus:sp, sep=" ")
 
 datatable(passerine)
+```
+
+
+```{r}
+passerine_abbreviations <- passerine %>% 
+  dplyr::select(especie, sp.abb)
 
 write_csv(passerine, here::here("data/passerine.csv"))
+write_csv(passerine_abbreviations, here::here("data/passerine_abbrev.csv"))
 ```
 
 
