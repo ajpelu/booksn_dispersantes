@@ -262,7 +262,8 @@ datatable(passerine)
 
 ```{r}
 passerine_abbreviations <- passerine %>% 
-  dplyr::select(especie, sp.abb)
+  dplyr::select(especie, sp.abb) %>% 
+  unique()
 
 write_csv(passerine, here::here("data/passerine.csv"))
 write_csv(passerine_abbreviations, here::here("data/passerine_abbrev.csv"))
