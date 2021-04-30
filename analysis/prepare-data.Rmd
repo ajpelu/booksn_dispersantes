@@ -223,7 +223,8 @@ dfab <- df %>%
   - Acanthis cannabina to Carduelis cannabina; 
   - Parus caeruleus to Cyanistes caeruleus; 
   - Parus ater to Periparus ater; 
-  - Phoenicurus ochuros to Phoenicurus ochruros; 
+  - Phoenicurus ochuros to Phoenicurus ochruros;
+  - Cuculos canorus to Cuculus canorus
 
 
 ```{r see-all-data}
@@ -233,6 +234,7 @@ birds <- bind_rows(old_census, dfab) %>%
     especie == "Parus caeruleus" ~ "Cyanistes caeruleus",
     especie == "Parus ater" ~ "Periparus ater", 
     especie == "Phoenicurus ochuros" ~ "Phoenicurus ochruros", 
+    especie == "Cuculos canorus" ~ "Cuculus canorus",
     TRUE ~ especie
   ))
 datatable(birds)
