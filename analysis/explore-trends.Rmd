@@ -1,0 +1,203 @@
+---
+title: "explore-trends"
+author: "Antonio J Perez-Luque"
+date: "2021-04-29"
+output: workflowr::wflow_html
+editor_options:
+  chunk_output_type: console
+---
+
+## Explore trends 
+
+```{r, set-global-options}
+knitr::opts_chunk$set(echo = TRUE, 
+                      warning = FALSE, 
+                      message = FALSE)
+```
+
+```{r load-pkgs}
+library("tidyverse")
+library("here")
+library("plotly")
+```
+
+- Read data and compute average abundance by year 
+
+```{r, read-data}
+passerine <- read_csv(here::here("data/passerine.csv")) 
+passerine_abbreviations <- read_csv(here::here("data/passerine_abbrev.csv")) 
+
+passerine.ab <- passerine %>% 
+  rename(sp = sp.abb) %>% 
+  group_by(especie, sp, year, habitat) %>% 
+  summarise(ab_avg = round(mean(den, na.rm=TRUE),2), 
+            sd = sd(den, na.rm = TRUE), 
+            se = sd/sqrt(length(den)), 
+            n = length(den)) 
+```
+
+
+```{r, define-ggplot-theme}
+bird_theme <- 
+  ggplot2::theme_bw() + 
+  ggplot2::theme(
+    panel.grid.minor = element_blank(),
+    strip.background = element_blank()
+  )
+```
+
+- We explore the abundance over time for each habitat, and then select those species with *n* years > 3. 
+
+## Summit environment  
+
+```{r, general-plot-cumbres}
+cumbres.plotall <- passerine.ab %>% 
+  filter(habitat == "cumbres") %>% 
+  ggplot(aes(x=as.factor(year), y=ab_avg)) + 
+  geom_errorbar(aes(ymin = ab_avg - se, 
+                    ymax = ab_avg + se),
+                width = 0.2) +
+  geom_point() +
+  facet_wrap(~especie) + 
+  ylab("abundance (ind / 10ha)") + xlab("") + 
+  bird_theme
+```
+
+```{r, plot-summits-all, echo=FALSE, message=FALSE}
+ggsave(here::here("output/abundance_time/plot_all_cumbres.pdf"),
+       width = 29, height = 15, units = "cm")
+cumbres.plotall
+dev.off()
+```
+
+
+- Plot only the selected taxa (contacted in more than three years)
+
+```{r, plot-cumbres}
+cumbres.plot <- passerine.ab %>% 
+  filter(habitat == "cumbres") %>% 
+  filter(stringr::str_detect(especie, "Card|Oena|Phoeni|collaris")) %>%
+  ggplot(aes(x=as.factor(year), y=ab_avg)) + 
+  geom_errorbar(aes(ymin = ab_avg - se, 
+                    ymax = ab_avg + se),
+                width = 0.2) +
+  geom_point() +
+  facet_wrap(~especie) + 
+  ylab("abundance (ind / 10ha)") + xlab("") + 
+  bird_theme + 
+  ggtitle("Summits")
+```
+
+```{r, plot-summits-selected, echo=FALSE, message=FALSE}
+ggsave(here::here("output/abundance_time/plot_selected_cumbres.pdf"),
+       width = 20, height = 15, units = "cm")
+cumbres.plot
+dev.off()
+```
+
+## Juniper scrublands  
+
+```{r, general-plot-enebral}
+enebral.plotall <- passerine.ab %>% 
+  filter(habitat == "enebral") %>% 
+  ggplot(aes(x=as.factor(year), y=ab_avg)) + 
+  geom_errorbar(aes(ymin = ab_avg - se, 
+                    ymax = ab_avg + se),
+                width = 0.2) +
+  geom_point() +
+  facet_wrap(~especie) + 
+  ylab("abundance (ind / 10ha)") + xlab("") + 
+  bird_theme +
+  theme(axis.text.x = element_text(angle=90)) 
+```
+
+```{r, plot-enebral-all, echo=FALSE, message=FALSE}
+ggsave(here::here("output/abundance_time/plot_all_enebral.pdf"),
+       width = 29, height = 21, units = "cm")
+enebral.plotall
+dev.off()
+```
+
+
+- Plot only the selected taxa (contacted in more than three years)
+
+```{r, plot-enebral}
+enebral.plot <- passerine.ab %>% 
+  filter(habitat == "enebral") %>% 
+  filter(stringr::str_detect(especie, 
+                             "Alauda|Anthus|cannabina|Embe|Oena|Phoeni|collaris|rubicola|conspici|Troglo")) %>%
+  ggplot(aes(x=as.factor(year), y=ab_avg)) + 
+  geom_errorbar(aes(ymin = ab_avg - se, 
+                    ymax = ab_avg + se),
+                width = 0.2) +
+  geom_point() +
+  facet_wrap(~especie, nrow = 5) + 
+  ylab("abundance (ind / 10ha)") + xlab("") + 
+  bird_theme + 
+  theme(axis.text.x = element_text(angle=90)) +  
+  ggtitle("Juniper")
+```
+
+```{r, plot-enebral-selected, echo=FALSE, message=FALSE}
+ggsave(here::here("output/abundance_time/plot_selected_enebral.pdf"),
+       width = 18, height = 21, units = "cm")
+enebral.plot
+dev.off()
+```
+
+
+## Oak populations   
+
+```{r, general-plot-robledal}
+robledal.plotall <- passerine.ab %>% 
+  filter(habitat == "robledal") %>% 
+  ggplot(aes(x=as.factor(year), y=ab_avg)) + 
+  geom_errorbar(aes(ymin = ab_avg - se, 
+                    ymax = ab_avg + se),
+                width = 0.2) +
+  geom_point() +
+  facet_wrap(~especie) + 
+  ylab("abundance (ind / 10ha)") + xlab("") + 
+  bird_theme +
+  theme(axis.text.x = element_text(angle=90))   
+```
+
+```{r, plot-robledal-all, echo=FALSE, message=FALSE}
+ggsave(here::here("output/abundance_time/plot_all_robledal.pdf"),
+       width = 29, height = 21, units = "cm")
+robledal.plotall
+dev.off()
+```
+
+- Plot only the selected taxa (contacted in more than three years)
+
+```{r, plot-robledal}
+robledal.plot <- passerine.ab %>% 
+  filter(habitat == "robledal") %>% 
+  filter(stringr::str_detect(especie, 
+                             "Aeg|cannabina|Certhia|Cyanis|Erith|Fringi|Garrulus|Lopho|Lullula|Parus|Peripares|Phoeni|bonelli|Regulus|rubicola|serinus|Sitta|atricapilla|cantillans|merula|visci|Troglo")) %>%
+  ggplot(aes(x=as.factor(year), y=ab_avg)) + 
+  geom_errorbar(aes(ymin = ab_avg - se, 
+                    ymax = ab_avg + se),
+                width = 0.2) +
+  geom_point() +
+  facet_wrap(~especie, nrow = 5) + 
+  ylab("abundance (ind / 10ha)") + xlab("") + 
+  bird_theme + 
+  theme(axis.text.x = element_text(angle=90)) +  
+  ggtitle("Oak woodlands")
+```
+
+```{r, plot-robledal-selected, echo=FALSE, message=FALSE, warning=FALSE}
+ggsave(here::here("output/abundance_time/plot_selected_robledal.pdf"),
+       width = 18, height = 21, units = "cm")
+robledal.plot
+dev.off()
+```
+
+
+
+
+
+
+
