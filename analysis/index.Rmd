@@ -11,3 +11,5 @@ editor_options:
 Notebook about analysis of bird census data (Book SN) 
 
 - Click on this [link](prepare-data.html) to see how the data were cleaning 
+
+- A first [data exploration analysis](explore-trends.html) was done for the abundance by species. We plotted the abundance of all species by habitat, and then only those species with more than three years along the time period analysed (see `plot_all_HABITAT.pdf` or `plot_selected_HABITAT.pdf` files in `/output/abundance_time`). 
