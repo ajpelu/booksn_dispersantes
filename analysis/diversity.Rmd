@@ -1,0 +1,112 @@
+---
+title: "diversity"
+author: "Antonio J Perez-Luque"
+date: "2021-05-03"
+output: workflowr::wflow_html
+editor_options:
+  chunk_output_type: console
+---
+
+# Diversity analysis 
+
+- Compute Simpson and Shannon diversity index. See diversity functions in vegan pkg. 
+
+```{r, set-global-options}
+knitr::opts_chunk$set(echo = TRUE, 
+                      warning = FALSE, 
+                      message = FALSE)
+```
+
+```{r load-pkgs}
+library("tidyverse")
+library("here")
+library("vegan")
+```
+
+```{r}
+passerine <- read_csv(here::here("data/passerine.csv")) 
+passerine_abbreviations <- read_csv(here::here("data/passerine_abbrev.csv")) 
+
+passerine.ab <- passerine %>% 
+  rename(sp = sp.abb) %>% 
+  dplyr::select(-especie) %>% 
+  group_by(sp, year, habitat) %>% 
+  summarise(ab_avg = round(mean(den, na.rm=TRUE),2), 
+            sd = sd(den, na.rm = TRUE), 
+            se = sd/sqrt(length(den)), 
+            n = length(den))
+
+df <- passerine.ab %>% 
+  unite("site", habitat:year, sep="_", remove = FALSE) %>% 
+  dplyr::select(-sd, -se, -n) %>% 
+  pivot_wider(names_from = sp, 
+              values_from = ab_avg, 
+              values_fill = 0)
+```
+
+
+Create a function to compute Simpson and Shannon diversity indices
+
+```{r, computeDiversity}
+computeDiversity <- function(d, hab, ...){
+  
+  df.habitat <- d %>% 
+    filter(habitat == hab) %>% 
+  dplyr::select(-habitat, -site) %>% 
+  dplyr::select_if(
+    negate(function(x) is.numeric(x) && sum(x) == 0)) %>%
+    column_to_rownames("year")
+  
+
+  shannon <- diversity(df.habitat, "shannon") %>%
+    as.data.frame() %>% rownames_to_column("year") %>%
+    rename(shannon = starts_with("."))
+
+  simpson <- diversity(df.habitat, "simpson") %>%
+    as.data.frame() %>%
+    rownames_to_column("year") %>%
+    rename(simpson = starts_with("."))
+
+  diver <- shannon %>%
+  inner_join(simpson) %>%
+  mutate(habitat = hab)
+  
+  return(diver)
+}
+```
+
+
+- Compute diversity index for each site 
+
+```{r}
+diver.summits <- computeDiversity(df, "cumbres")
+diver.juniper <- computeDiversity(df, "enebral")
+diver.robledal <- computeDiversity(df, "robledal")
+
+diversity_index <- bind_rows(diver.summits, diver.juniper, diver.robledal)
+```
+
+```{r, plot-diversisty}
+diversity_plot <- diversity_index %>% 
+  filter(!(habitat == "cumbres" & year == 2013)) %>% 
+  ggplot(
+  aes(x=year, y=shannon, colour=habitat, group=habitat)) +
+    geom_point() + geom_line() +
+  geom_smooth(method = "lm", 
+              se=FALSE, size = .5, linetype="dashed") + 
+  ylab("Shannon Index (H')") + 
+  theme_bw() + 
+  theme(
+    panel.grid = element_blank(),
+    #panel.grid.major.x = element_blank(),
+    strip.background = element_blank()
+  )
+
+
+ggsave(here::here("output/diversity/diversity_habitat.pdf"),
+       width = 18, height = 12, units = "cm")
+diversity_plot
+dev.off()
+```
+
+
