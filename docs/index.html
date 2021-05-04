@@ -302,7 +302,7 @@ $(document).ready(function () {
 <div class="tab-content">
 <div id="summary" class="tab-pane fade in active">
 <p>
-<strong>Last updated:</strong> 2021-05-03
+<strong>Last updated:</strong> 2021-05-04
 </p>
 <p>
 <strong>Checks:</strong> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> 2 <span class="glyphicon glyphicon-exclamation-sign text-danger" aria-hidden="true"></span> 0
@@ -333,16 +333,16 @@ This reproducible <a href="http://rmarkdown.rstudio.com">R Markdown</a> analysis
 <div class="panel panel-default">
 <div class="panel-heading">
 <p class="panel-title">
-<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomajpelubooksndispersantestree530618976c7788537321fe17e7ad8477b5dacb2dtargetblank5306189a"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Repository version:</strong> <a href="https://github.com/ajpelu/booksn_dispersantes/tree/530618976c7788537321fe17e7ad8477b5dacb2d" target="_blank">5306189</a> </a>
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomajpelubooksndispersantestree21da5021e94bcb5bc0f5fe38f6f935858bf43fbftargetblank21da502a"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Repository version:</strong> <a href="https://github.com/ajpelu/booksn_dispersantes/tree/21da5021e94bcb5bc0f5fe38f6f935858bf43fbf" target="_blank">21da502</a> </a>
 </p>
 </div>
-<div id="strongRepositoryversionstrongahrefhttpsgithubcomajpelubooksndispersantestree530618976c7788537321fe17e7ad8477b5dacb2dtargetblank5306189a" class="panel-collapse collapse">
+<div id="strongRepositoryversionstrongahrefhttpsgithubcomajpelubooksndispersantestree21da5021e94bcb5bc0f5fe38f6f935858bf43fbftargetblank21da502a" class="panel-collapse collapse">
 <div class="panel-body">
 <p>
 Great! You are using Git for version control. Tracking code development and connecting the code version to the results is critical for reproducibility.
 </p>
 <p>
-The results in this page were generated with repository version <a href="https://github.com/ajpelu/booksn_dispersantes/tree/530618976c7788537321fe17e7ad8477b5dacb2d" target="_blank">5306189</a>. See the <em>Past versions</em> tab to see a history of the changes made to the R Markdown and HTML files.
+The results in this page were generated with repository version <a href="https://github.com/ajpelu/booksn_dispersantes/tree/21da5021e94bcb5bc0f5fe38f6f935858bf43fbf" target="_blank">21da502</a>. See the <em>Past versions</em> tab to see a history of the changes made to the R Markdown and HTML files.
 </p>
 <p>
 Note that you need to be careful to ensure that all relevant files for the analysis have been committed to Git prior to generating the results (you can use <code>wflow_publish</code> or <code>wflow_git_commit</code>). workflowr only checks the R Markdown file, but you know if there are other scripts or data files that it depends on. Below is the status of the Git repository when the results were generated:
@@ -354,20 +354,13 @@ Ignored files:
     Ignored:    data/.DS_Store
 
 Untracked files:
-    Untracked:  analysis/temporal-beta-diveristy.Rmd
     Untracked:  data/passerine_abbrev.csv
 
 Unstaged changes:
+    Modified:   code/computeTBI.R
     Modified:   data/birds.csv
     Deleted:    data/data_raw/~$Aves_SN_meses_reproduccion.xlsx
     Modified:   data/passerine.csv
-    Modified:   output/abundance_time/plot_all_cumbres.pdf
-    Modified:   output/abundance_time/plot_all_enebral.pdf
-    Modified:   output/abundance_time/plot_all_robledal.pdf
-    Modified:   output/abundance_time/plot_selected_cumbres.pdf
-    Modified:   output/abundance_time/plot_selected_enebral.pdf
-    Modified:   output/abundance_time/plot_selected_robledal.pdf
-    Modified:   output/diversity/diversity_habitat.pdf
 
 </code></pre>
 <p>
@@ -406,6 +399,40 @@ Message
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/ajpelu/booksn_dispersantes/blob/21da5021e94bcb5bc0f5fe38f6f935858bf43fbf/analysis/index.Rmd" target="_blank">21da502</a>
+</td>
+<td>
+Antonio J Perez-Luque
+</td>
+<td>
+2021-05-04
+</td>
+<td>
+generate betadiversity analysis
+</td>
+</tr>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/ajpelu/booksn_dispersantes/12af27d4478957e48b9ad495570ce00d048741d8/docs/index.html" target="_blank">12af27d</a>
+</td>
+<td>
+Antonio J Perez-Luque
+</td>
+<td>
+2021-05-03
+</td>
+<td>
+Build site.
+</td>
+</tr>
 <tr>
 <td>
 Rmd
@@ -690,6 +717,7 @@ Start workflowr project.
 <li><p>Click on this <a href="prepare-data.html">link</a> to see how the data were cleaning</p></li>
 <li><p>A first <a href="explore-trends.html">data exploration analysis</a> was done for the abundance by species. We plotted the abundance of all species by habitat, and then only those species with more than three years along the time period analysed (see <code>plot_all_HABITAT.pdf</code> or <code>plot_selected_HABITAT.pdf</code> files in <code>/output/abundance_time</code>).</p></li>
 <li><p><strong>Diversity analysis</strong> (alpha-divesity) could be found <a href="diversity.html">here</a>. Graphic outputs are stored at <code>/output/diversity</code>).</p></li>
+<li><p><strong>Beta-diversity</strong> analysis could be found <a href="temporal-beta-diversity.html">here</a>. Graphic outputs are stored at <code>/output/betadiversity</code>).</p></li>
 </ul>
 
 
