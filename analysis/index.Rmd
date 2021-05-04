@@ -15,3 +15,5 @@ Notebook about analysis of bird census data (Book SN)
 - A first [data exploration analysis](explore-trends.html) was done for the abundance by species. We plotted the abundance of all species by habitat, and then only those species with more than three years along the time period analysed (see `plot_all_HABITAT.pdf` or `plot_selected_HABITAT.pdf` files in `/output/abundance_time`). 
 
 - **Diversity analysis** (alpha-divesity) could be found [here](diversity.html). Graphic outputs are stored at  `/output/diversity`). 
+
+- **Beta-diversity** analysis could be found [here](temporal-beta-diversity.html). Graphic outputs are stored at  `/output/betadiversity`). 

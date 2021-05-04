@@ -1,0 +1,209 @@
+---
+title: "Temporal beta diveristy"
+author: "Antonio J Perez-Luque"
+date: "2021-04-30"
+output: workflowr::wflow_html
+editor_options:
+  chunk_output_type: console
+---
+
+# Explore temporal beta diversity  
+
+- We explore the temporal evolution of $\beta$-diversity (BD)
+
+- We read about BD and found several papers: 
+
+  - [Legrende & De Cáceres (2013)](https://doi.org/10.1111/ele.12141)
+  - [Lengrende (2019)](https://doi.org/10.1002/ece3.4984)
+  - [Baselga (2010)](https://doi.org/10.1111/j.1466-8238.2009.00490.x); [Baselga (2012)](https://doi.org/10.1111/j.1466-8238.2011.00756.x); [Baselga (2017)](https://doi.org/10.1111/2041-210X.12693) 
+  - [Baselga et al. (2015)](https://doi.org/10.1371/journal.pone.0127913)
+
+- There are several R packages for BD computation: betapart; adespatial. 
+
+## Computation of Temporal Beta Diversity Index 
+
+- For each location we explore the TBI (see Legrende 2019) in three temporal times: t0 (1982), t1 (2010), t2(2019)
+
+
+```{r, set-global-options}
+knitr::opts_chunk$set(echo = TRUE, 
+                      warning = FALSE, 
+                      message = FALSE)
+```
+
+```{r load-pkgs}
+library("tidyverse")
+library("here")
+library("plotly")
+library("adespatial")
+library("DT")
+library("betapart")
+source(here::here("code/computeTBI.R"))
+```
+
+- Read data and compute the abundance average by year
+
+```{r, read-data}
+passerine <- read_csv(here::here("data/passerine.csv")) 
+passerine_abbreviations <- read_csv(here::here("data/passerine_abbrev.csv")) 
+
+passerine.ab <- passerine %>% 
+  rename(sp = sp.abb) %>% 
+  dplyr::select(-especie) %>% 
+  group_by(sp, year, habitat) %>% 
+  summarise(ab_avg = round(mean(den, na.rm=TRUE),2), 
+            sd = sd(den, na.rm = TRUE), 
+            se = sd/sqrt(length(den)), 
+            n = length(den)) 
+```
+
+- Prepare data for Temporal Beta Diversity analysis:
+
+  - generate a site.year variable = "site"."year"
+  - transpose from long to wide format to get sites as rows and especies as column
+  - abundance values as values
+  - NA values are filled with 0
+
+```{r, prepare-data}
+df <- passerine.ab %>% 
+  unite("site", habitat:year, sep="_", remove = FALSE) %>% 
+  dplyr::select(-sd, -se, -n) %>% 
+  pivot_wider(names_from = sp, 
+              values_from = ab_avg, 
+              values_fill = 0)
+```
+
+### TBI summit habitat 
+
+- years selected: 1982, 2008, 2018
+
+```{r, tbi-cumbres}
+cumbres <- df %>% 
+  filter(habitat == "cumbres") %>% 
+  dplyr::select(-year) %>% 
+  column_to_rownames(var="site") %>% 
+  dplyr::select_if(
+    negate(function(x) is.numeric(x) && sum(x) == 0)) %>% 
+  arrange(year)
+  
+
+years <- df %>% filter(habitat == "cumbres") %>% arrange(year) %>% pull(year) 
+
+years_selected <- c(1982, 2008, 2018)
+
+tbi_summits <- computeTBI(cumbres, vector.years = years_selected, y0=1982)
+```
+
+
+```{r, eval=FALSE, echo=FALSE}
+tbi_summits %>% 
+  rename("losses" = `mean(B/den)`,
+         "gains" = `mean(C/den)`,
+         "D" = `mean(D)`) %>% 
+  unite("pair", year_t0:year_t1, sep=" - ") %>% 
+  dplyr::select(habitat:D, Change) %>% 
+  pivot_longer(losses:D) %>% 
+  ggplot(aes(x=pair, y=value, colour=name, group=name)) +
+  geom_point() + geom_line()
+```
+
+### TBI juniper habitat 
+
+- years selected: 1984, 2008, 2018
+
+```{r, tbi-enebral}
+enebral <- df %>% 
+  filter(habitat == "enebral") %>% 
+  dplyr::select(-year) %>% 
+  column_to_rownames(var="site") %>% 
+  dplyr::select_if(
+    negate(function(x) is.numeric(x) && sum(x) == 0)) %>% 
+  arrange(year)
+  
+years <- df %>% filter(habitat == "enebral") %>% arrange(year) %>% pull(year) 
+years_selected <- c(1984, 2008, 2018)
+
+tbi_juniper <- computeTBI(enebral, vector.years = years_selected, y0 = 1984)
+```
+
+
+### TBI oak habitat 
+
+- years selected: 1981, 2008, 2018 
+
+```{r, tbi-robledal}
+robledal <- df %>% 
+  filter(habitat == "robledal") %>% 
+  dplyr::select(-year) %>% 
+  column_to_rownames(var="site") %>% 
+  dplyr::select_if(
+    negate(function(x) is.numeric(x) && sum(x) == 0)) %>% 
+  arrange(year)
+  
+years <- df %>% filter(habitat == "robledal") %>% arrange(year) %>% pull(year) 
+years_selected <- c(1981, 2008, 2018)
+
+tbi_robledal <- computeTBI(robledal, vector.years = years_selected, y0 = 1981)
+```
+
+## Explore dissimilarities 
+
+```{r, generate-dissimilarity}
+d <- bind_rows(tbi_summits, tbi_juniper, tbi_robledal) %>% 
+  mutate(year_t0common = "1980's") %>% 
+  rename("losses" = `mean(B/den)`,
+         "gains" = `mean(C/den)`,
+         "D" = `mean(D)`) %>% 
+  unite("pair", year_t0common, year_t1, sep="-") %>% 
+  dplyr::select(habitat:D, Change) 
+
+write_csv(d, file=here::here("output/betadiversity/tbi.csv"))
+
+DT::datatable(d) %>% DT::formatRound(columns = c("losses", "gains", "D"), digits=3)
+
+```
+
+```{r, plot-generate-dissimilarity}
+cols <- c("cumbres" = "#8d96a3", "enebral" = "#66a182", "robledal" = "#edae49")
+plot_BD <- d %>% 
+  ggplot(aes(x=pair, fill=habitat, colour=habitat)) +
+  geom_bar(aes(y=D), stat="identity", position = position_dodge2(width = .9)) + 
+  ylab(expression(paste("Dissimilarity in ", beta, "-diversisty"))) +
+  xlab("") + 
+  theme_bw() +
+  scale_color_manual(values = cols) + 
+  scale_fill_manual(values = cols) + 
+  geom_point(aes(x=pair, y=losses), colour="black", shape=25, 
+             position = position_dodge2(width = .9)) 
+
+ggsave(here::here("output/betadiversity/plot_betadiversity.pdf"),
+       width = 12, height = 10, units = "cm")
+plot_BD
+dev.off()
+```
+
+
+### BetaPart Analysis 
+
+```{r}
+b.cumbres <- betapart.core.abund(cumbres[,-c(1:2)])
+bd.cumbres <- beta.multi.abund(b.cumbres, index.family = "bray")
+
+b.enebral <- betapart.core.abund(enebral[,-c(1:2)])
+bd.enebral <- beta.multi.abund(b.enebral, index.family = "bray")
+
+b.robledal <- betapart.core.abund(robledal[,-c(1:2)])
+bd.robledal <- beta.multi.abund(b.robledal, index.family = "bray")
+
+bd <- cbind(data.frame(robledal = unlist(bd.robledal)),
+      data.frame(enebral = unlist(bd.enebral)),
+      data.frame(cumbres = unlist(bd.cumbres))) %>% 
+  rownames_to_column("variable") %>% 
+  pivot_longer(robledal:cumbres, names_to = "habitat") 
+
+
+write.csv(bd, file=here::here("output/betadiversity/betapart.csv"))
+
+DT::datatable(bd) %>% DT::formatRound("value", digits=3)
+```
+
