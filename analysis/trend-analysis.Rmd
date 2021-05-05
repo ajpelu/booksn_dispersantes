@@ -1,0 +1,265 @@
+---
+title: "trend-analysis"
+author: "Antonio J Perez-Luque"
+date: "2021-05-04"
+output: workflowr::wflow_html
+editor_options:
+  chunk_output_type: console
+---
+
+## Introduction
+
+
+
+```{r, set-global-options}
+knitr::opts_chunk$set(echo = TRUE, 
+                      warning = FALSE, 
+                      message = FALSE)
+```
+
+```{r load-pkgs}
+library("tidyverse")
+library("here")
+library("rtrim")
+library("trend")
+library("DT")
+```
+
+- Read data and compute the abundance average by year
+
+```{r, read-data}
+passerine <- read_csv(here::here("data/passerine.csv")) 
+passerine_abbreviations <- read_csv(here::here("data/passerine_abbrev.csv")) 
+
+passerine.ab <- passerine %>% 
+  rename(sp = sp.abb) %>% 
+  dplyr::select(-especie) %>% 
+  group_by(sp, year, habitat) %>% 
+  summarise(ab_avg = round(mean(den, na.rm=TRUE),2), 
+            sd = sd(den, na.rm = TRUE), 
+            se = sd/sqrt(length(den)), 
+            n = length(den)) 
+```
+
+
+## Explore Abundances as index 
+
+- For each species we compute the abundance index, *i.e.* relative abundance comparing 
+with initial values ($ab_{index} = abundance_{time_{i}} / abundance_{time_{0}}$)
+
+- Data was exported as (`data/passerine_ab.csv`) 
+
+```{r}
+compute_abindex <- function(x){
+  ab.base <- x %>% filter(year == min(x$year)) %>% pull(ab_avg)
+  out <- x %>% mutate(ab.index = ab_avg/ab.base) %>% dplyr::select(year,ab.index)
+  return(out)
+}
+
+cumbres <- passerine.ab %>% 
+  filter(habitat == "cumbres") 
+cumbres.index <- cumbres %>% 
+  group_by(sp) %>% group_modify(
+    ~ {compute_abindex(.x)})
+cumbres <-cumbres %>%  inner_join(cumbres.index)
+
+
+enebral <- passerine.ab %>% 
+  filter(habitat == "enebral") 
+enebral.index <- enebral %>% 
+  group_by(sp) %>% group_modify(
+    ~ {compute_abindex(.x)})
+enebral <- enebral %>%  inner_join(enebral.index)
+
+robledal <- passerine.ab %>% 
+  filter(habitat == "robledal") 
+robledal.index <- robledal %>% 
+  group_by(sp) %>% group_modify(
+    ~ {compute_abindex(.x)})
+robledal <- robledal %>%  inner_join(robledal.index)
+
+passerine.abindex <- bind_rows(cumbres, enebral, robledal) %>% 
+  inner_join(passerine_abbreviations, by = c("sp" = "sp.abb"))
+
+write_csv(passerine.abindex, here::here("data/passerine_ab.csv"))
+```
+
+
+```{r}
+bird_theme <- 
+  ggplot2::theme_bw() + 
+  ggplot2::theme(
+    panel.grid.minor = element_blank(),
+    strip.background = element_blank()
+  )
+
+```
+
+```{r}
+# Generate functions to plot abundances and abundance index 
+plotabundances <- function(df, myhabitat, selected_especies){
+  df %>% 
+  filter(habitat == myhabitat) %>% 
+  filter(stringr::str_detect(especie, selected_especies)) %>%
+  ggplot(aes(x=as.factor(year), y=ab_avg)) + 
+  geom_errorbar(aes(ymin = ab_avg - se, 
+                    ymax = ab_avg + se),
+                width = 0.2) +
+  geom_point() +
+  geom_point(aes(x=as.factor(year), y=ab.index), color = "red", shape=15) + 
+  geom_hline(yintercept = 1, colour="red", linetype = "dashed") + 
+  facet_wrap(~especie) + 
+  geom_line(aes(x=as.factor(year), y=ab.index, group=1), colour = "red") +
+  ylab("abundance (ind / 10ha)") + xlab("") + 
+  bird_theme + 
+  ggtitle(myhabitat)
+} 
+
+plotabindex <- function(df, myhabitat, selected_especies){
+  df %>% 
+  filter(habitat == myhabitat) %>% 
+  filter(stringr::str_detect(especie, selected_especies)) %>%
+  ggplot(aes(x=as.factor(year), y=ab.index)) + 
+  geom_point(color = "red", shape=15) + 
+  geom_hline(yintercept = 1, colour="red", linetype = "dashed") + 
+  facet_wrap(~especie) + 
+  geom_line(aes(x=as.factor(year), y=ab.index, group=1), colour = "red") +
+  ylab("abundance (ind / 10ha)") + xlab("") + 
+  bird_theme + 
+  ggtitle(myhabitat)
+} 
+```
+
+```{r}
+sp_cumbres <- "Card|Oena|Phoeni|collaris"
+sp_enebral <- "Alauda|Anthus|cannabina|Embe|Oena|Phoeni|collaris|conspici|Troglo"
+sp_robledal <- "Aeg|cannabina|Certhia|Cyanis|Erith|Fringi|Garrulus|Lullula|Parus|Peripares|Phoeni|bonelli|Regulus|rubicola|serinus|Sitta|atricapilla|cantillans|merula|visci|Troglo"
+
+# enebral rubicola
+# robledal Lopho
+
+```
+
+```{r, eval=FALSE}
+plotabundances(df = passerine.abindex, 
+           myhabitat = "cumbres",
+           selected_especies = sp_cumbres)
+
+plotabundances(df = passerine.abindex, 
+           myhabitat = "enebral",
+           selected_especies = sp_enebral)
+
+plotabundances(df = passerine.abindex, 
+           myhabitat = "robledal",
+           selected_especies = sp_robledal)
+```
+
+
+```{r}
+plotabindex(df = passerine.abindex, 
+           myhabitat = "cumbres",
+           selected_especies = sp_cumbres)
+plotabindex(df = passerine.abindex, 
+           myhabitat = "enebral",
+           selected_especies = sp_enebral)
+plotabindex(df = passerine.abindex, 
+           myhabitat = "robledal",
+           selected_especies = sp_robledal)
+
+```
+
+
+
+
+## Compute Mann-Kendall trends 
+
+```{r}
+# compute Sens and Mk for each spec and habitat 
+
+computeMKS <- function(x) {
+  v <- x %>% pull(ab_avg)
+  s <- sens.slope(v, conf.level = 0.95)
+  mk <- mk.test(v)
+  out <- data.frame(
+    S = mk$estimates[1],
+    varS = mk$estimates[2],
+    tau = mk$estimates[3],
+    pvalue = s$p.value,
+    z = mk$statistic,
+    n = mk$parameter,
+    senslope = s$estimates,
+    sens.cilo = s$conf.int[1],
+    sens.ciup = s$conf.int[2]
+  )
+  row.names(out) <- ""
+  return(out)
+}
+
+```
+
+
+```{r}
+mk.cumbres <- passerine.abindex %>% 
+  filter(habitat == "cumbres") %>% 
+  filter(stringr::str_detect(especie, sp_cumbres)) %>% 
+  group_by(especie) %>% 
+  group_modify(
+    ~ {computeMKS(.x)}) %>% 
+  mutate(habitat = "cumbres")
+
+mk.enebral <- passerine.abindex %>% 
+  filter(habitat == "enebral") %>% 
+  filter(stringr::str_detect(especie, sp_enebral)) %>% 
+  group_by(especie) %>% 
+  group_modify(
+    ~ {computeMKS(.x)}) %>% 
+  mutate(habitat = "enebral")
+
+mk.robledal <- passerine.abindex %>% 
+  filter(habitat == "robledal") %>% 
+  filter(stringr::str_detect(especie, sp_robledal)) %>% 
+  group_by(especie) %>% 
+  group_modify(
+    ~ {computeMKS(.x)}) %>% 
+  mutate(habitat = "robledal")
+ 
+
+mk.all <- bind_rows(mk.cumbres, mk.enebral, mk.robledal) %>%
+  relocate(habitat) %>%
+  mutate(across(.cols = c(varS, tau, pvalue, z, senslope, sens.cilo, sens.ciup), round, 3))
+
+write_csv(mk.all, here::here("output/mktrend/mktrend_especies.csv"))
+
+datatable(mk.all)
+```
+
+
+```{r}
+plotmk <- mk.all %>% 
+  mutate(sig = ifelse(pvalue < 0.05, "*", "")) %>% 
+  ggplot(aes(x=especie, y=tau)) + 
+  geom_bar(stat="identity", fill="gray") +
+  facet_wrap(~habitat) + coord_flip() + 
+  theme_bw() + 
+  geom_hline(yintercept = 0) + 
+  geom_text(aes(label=sig), hjust=1.5, size=4) + 
+  theme(
+    panel.grid.minor = element_blank(),
+    strip.background = element_blank()
+  ) + 
+  xlab("Species") + ylab("Mann-Kendall trend (tau)")
+
+
+ggsave(here::here("output/mktrend/plot_mktrend.pdf"),
+       width =21, height = 15, units = "cm")
+plotmk 
+dev.off()
+
+```
+
+
+
+
+
+
+
