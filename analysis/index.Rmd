@@ -17,3 +17,5 @@ Notebook about analysis of bird census data (Book SN)
 - **Diversity analysis** (alpha-divesity) could be found [here](diversity.html). Graphic outputs are stored at  `/output/diversity`). 
 
 - **Beta-diversity** analysis could be found [here](temporal-beta-diversity.html). Graphic outputs are stored at  `/output/betadiversity`). 
+
+- **Trend analysis (Mann-Kendall analysis)** could be found [here](trend-analysis.html). Graphic outputs are stored at  `/output/mktrend`). 
