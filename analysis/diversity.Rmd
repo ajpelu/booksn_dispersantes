@@ -84,6 +84,7 @@ diver.juniper <- computeDiversity(df, "enebral")
 diver.robledal <- computeDiversity(df, "robledal")
 
 diversity_index <- bind_rows(diver.summits, diver.juniper, diver.robledal)
+write_csv(diversity_index, here::here("output/diversity/alfa_diversity.csv"))
 ```
 
 ```{r, plot-diversisty}
@@ -109,4 +110,39 @@ diversity_plot
 dev.off()
 ```
 
+# Compare three temporal times
+
+- Generate three temporal times: 1983; 2009: mean for 2008 - 2009; and 2018: mean for 2017 - 2018. 
+
+```{r, fig.width=3}
+shannon <- diversity_index %>% 
+  filter(year %in% c(1981:1985, 2008:2009, 2017:2018)) %>% 
+  mutate(yearF = case_when(
+    year %in% c(1981:1985) ~ as.character(1983), 
+    year %in% c(2008:2009) ~ as.character(2009),
+    year %in% c(2017:2018) ~ as.character(2018)
+  )) %>% 
+  group_by(yearF, habitat) %>% 
+  summarise(mean = mean(shannon, na.rm=TRUE), 
+            sd = sd(shannon, na.rm=TRUE),
+            se = sd/sqrt(length(shannon)))
+
+shannon %>% 
+  ggplot(aes(x=yearF, y=mean, group=1)) + 
+  geom_point() +
+  geom_line() + 
+  # geom_bar(stat="identity", fill="black") + 
+  geom_errorbar(aes(ymax = mean + se, ymin= mean - se), 
+                width = .2, size = .3) + 
+  facet_wrap(~habitat, ncol = 1) + 
+  theme_bw() +
+  theme(
+    panel.grid.minor = element_blank(),
+    strip.background = element_blank()
+  ) + 
+  ylab("Shannon Index (H')") + xlab("")
+  
+
+
+```
 
