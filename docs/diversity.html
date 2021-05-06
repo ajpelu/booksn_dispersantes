@@ -382,7 +382,7 @@ div.tocify {
 <div class="tab-content">
 <div id="summary" class="tab-pane fade in active">
 <p>
-<strong>Last updated:</strong> 2021-05-03
+<strong>Last updated:</strong> 2021-05-06
 </p>
 <p>
 <strong>Checks:</strong> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> 7 <span class="glyphicon glyphicon-exclamation-sign text-danger" aria-hidden="true"></span> 0
@@ -473,16 +473,16 @@ This reproducible <a href="http://rmarkdown.rstudio.com">R Markdown</a> analysis
 <div class="panel panel-default">
 <div class="panel-heading">
 <p class="panel-title">
-<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomajpelubooksndispersantestree530618976c7788537321fe17e7ad8477b5dacb2dtargetblank5306189a"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Repository version:</strong> <a href="https://github.com/ajpelu/booksn_dispersantes/tree/530618976c7788537321fe17e7ad8477b5dacb2d" target="_blank">5306189</a> </a>
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomajpelubooksndispersantestree4ef40a75f3c7c1e52f26ffb917a4b4c308a81d37targetblank4ef40a7a"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Repository version:</strong> <a href="https://github.com/ajpelu/booksn_dispersantes/tree/4ef40a75f3c7c1e52f26ffb917a4b4c308a81d37" target="_blank">4ef40a7</a> </a>
 </p>
 </div>
-<div id="strongRepositoryversionstrongahrefhttpsgithubcomajpelubooksndispersantestree530618976c7788537321fe17e7ad8477b5dacb2dtargetblank5306189a" class="panel-collapse collapse">
+<div id="strongRepositoryversionstrongahrefhttpsgithubcomajpelubooksndispersantestree4ef40a75f3c7c1e52f26ffb917a4b4c308a81d37targetblank4ef40a7a" class="panel-collapse collapse">
 <div class="panel-body">
 <p>
 Great! You are using Git for version control. Tracking code development and connecting the code version to the results is critical for reproducibility.
 </p>
 <p>
-The results in this page were generated with repository version <a href="https://github.com/ajpelu/booksn_dispersantes/tree/530618976c7788537321fe17e7ad8477b5dacb2d" target="_blank">5306189</a>. See the <em>Past versions</em> tab to see a history of the changes made to the R Markdown and HTML files.
+The results in this page were generated with repository version <a href="https://github.com/ajpelu/booksn_dispersantes/tree/4ef40a75f3c7c1e52f26ffb917a4b4c308a81d37" target="_blank">4ef40a7</a>. See the <em>Past versions</em> tab to see a history of the changes made to the R Markdown and HTML files.
 </p>
 <p>
 Note that you need to be careful to ensure that all relevant files for the analysis have been committed to Git prior to generating the results (you can use <code>wflow_publish</code> or <code>wflow_git_commit</code>). workflowr only checks the R Markdown file, but you know if there are other scripts or data files that it depends on. Below is the status of the Git repository when the results were generated:
@@ -494,19 +494,19 @@ Ignored files:
     Ignored:    data/.DS_Store
 
 Untracked files:
-    Untracked:  analysis/temporal-beta-diveristy.Rmd
+    Untracked:  data/passerine_ab.csv
     Untracked:  data/passerine_abbrev.csv
+    Untracked:  output/diversity/alfa_diversity.csv
 
 Unstaged changes:
+    Deleted:    analysis/temporal-beta-diveristy.Rmd
+    Modified:   code/computeTBI.R
     Modified:   data/birds.csv
     Deleted:    data/data_raw/~$Aves_SN_meses_reproduccion.xlsx
     Modified:   data/passerine.csv
-    Modified:   output/abundance_time/plot_all_cumbres.pdf
-    Modified:   output/abundance_time/plot_all_enebral.pdf
-    Modified:   output/abundance_time/plot_all_robledal.pdf
-    Modified:   output/abundance_time/plot_selected_cumbres.pdf
-    Modified:   output/abundance_time/plot_selected_enebral.pdf
-    Modified:   output/abundance_time/plot_selected_robledal.pdf
+    Modified:   output/betadiversity/plot_betadiversity.pdf
+    Modified:   output/diversity/diversity_habitat.pdf
+    Modified:   output/mktrend/plot_mktrend.pdf
 
 </code></pre>
 <p>
@@ -545,6 +545,40 @@ Message
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/ajpelu/booksn_dispersantes/blob/4ef40a75f3c7c1e52f26ffb917a4b4c308a81d37/analysis/diversity.Rmd" target="_blank">4ef40a7</a>
+</td>
+<td>
+Antonio J Perez-Luque
+</td>
+<td>
+2021-05-06
+</td>
+<td>
+compare diversity by temporal steps
+</td>
+</tr>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/ajpelu/booksn_dispersantes/12af27d4478957e48b9ad495570ce00d048741d8/docs/diversity.html" target="_blank">12af27d</a>
+</td>
+<td>
+Antonio J Perez-Luque
+</td>
+<td>
+2021-05-03
+</td>
+<td>
+Build site.
+</td>
+</tr>
 <tr>
 <td>
 Rmd
@@ -631,7 +665,8 @@ df &lt;- passerine.ab %&gt;%
 diver.juniper &lt;- computeDiversity(df, &quot;enebral&quot;)
 diver.robledal &lt;- computeDiversity(df, &quot;robledal&quot;)
 
-diversity_index &lt;- bind_rows(diver.summits, diver.juniper, diver.robledal)</code></pre>
+diversity_index &lt;- bind_rows(diver.summits, diver.juniper, diver.robledal)
+write_csv(diversity_index, here::here(&quot;output/diversity/alfa_diversity.csv&quot;))</code></pre>
 <pre class="r"><code>diversity_plot &lt;- diversity_index %&gt;% 
   filter(!(habitat == &quot;cumbres&quot; &amp; year == 2013)) %&gt;% 
   ggplot(
@@ -652,9 +687,79 @@ ggsave(here::here(&quot;output/diversity/diversity_habitat.pdf&quot;),
        width = 18, height = 12, units = &quot;cm&quot;)
 diversity_plot</code></pre>
 <p><img src="figure/diversity.Rmd/plot-diversisty-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-plot-diversisty-1">
+Past versions of plot-diversisty-1.png
+</button>
+</p>
+<div id="fig-plot-diversisty-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/ajpelu/booksn_dispersantes/blob/12af27d4478957e48b9ad495570ce00d048741d8/docs/figure/diversity.Rmd/plot-diversisty-1.png" target="_blank">12af27d</a>
+</td>
+<td>
+Antonio J Perez-Luque
+</td>
+<td>
+2021-05-03
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre class="r"><code>dev.off()</code></pre>
 <pre><code>null device 
           1 </code></pre>
+</div>
+<div id="compare-three-temporal-times" class="section level1">
+<h1>Compare three temporal times</h1>
+<ul>
+<li>Generate three temporal times: 1983; 2009: mean for 2008 - 2009; and 2018: mean for 2017 - 2018.</li>
+</ul>
+<pre class="r"><code>shannon &lt;- diversity_index %&gt;% 
+  filter(year %in% c(1981:1985, 2008:2009, 2017:2018)) %&gt;% 
+  mutate(yearF = case_when(
+    year %in% c(1981:1985) ~ as.character(1983), 
+    year %in% c(2008:2009) ~ as.character(2009),
+    year %in% c(2017:2018) ~ as.character(2018)
+  )) %&gt;% 
+  group_by(yearF, habitat) %&gt;% 
+  summarise(mean = mean(shannon, na.rm=TRUE), 
+            sd = sd(shannon, na.rm=TRUE),
+            se = sd/sqrt(length(shannon)))
+
+shannon %&gt;% 
+  ggplot(aes(x=yearF, y=mean, group=1)) + 
+  geom_point() +
+  geom_line() + 
+  # geom_bar(stat=&quot;identity&quot;, fill=&quot;black&quot;) + 
+  geom_errorbar(aes(ymax = mean + se, ymin= mean - se), 
+                width = .2, size = .3) + 
+  facet_wrap(~habitat, ncol = 1) + 
+  theme_bw() +
+  theme(
+    panel.grid.minor = element_blank(),
+    strip.background = element_blank()
+  ) + 
+  ylab(&quot;Shannon Index (H&#39;)&quot;) + xlab(&quot;&quot;)</code></pre>
+<p><img src="figure/diversity.Rmd/unnamed-chunk-3-1.png" width="288" style="display: block; margin: auto;" /></p>
 <br>
 <p>
 <button type="button" class="btn btn-default btn-workflowr btn-workflowr-sessioninfo" data-toggle="collapse" data-target="#workflowr-sessioninfo" style="display: block;">
