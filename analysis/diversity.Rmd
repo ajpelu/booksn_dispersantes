@@ -141,8 +141,29 @@ shannon %>%
     strip.background = element_blank()
   ) + 
   ylab("Shannon Index (H')") + xlab("")
-  
-
-
 ```
+
+## Richness 
+
+```{r}
+richness <- passerine.ab %>% 
+  group_by(habitat, year) %>% 
+  summarise(richness = length(sp))
+write_csv(richness, here::here("output/diversity/richness.csv"))
+```
+
+```{r}
+richness %>% 
+  ggplot(aes(as.factor(year), richness)) +
+  geom_point() + 
+  geom_path(aes(group=habitat)) + 
+  facet_wrap(~habitat, nrow = 3) + 
+  ylab("Richness (n sps)") + xlab("") + 
+  theme_bw() + 
+  theme(
+    panel.grid.minor = element_blank(),
+    strip.background = element_blank()
+  )
+```
+
 
