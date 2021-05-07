@@ -7,17 +7,6 @@ editor_options:
   chunk_output_type: console
 ---
 
-## Introduction
-
-
----
-title: "turnover"
-author: "Antonio J Perez-Luque"
-date: "2021-05-07"
-output: workflowr::wflow_html
-editor_options:
-  chunk_output_type: console
----
 
 ## Abundance Analysis
 
@@ -92,7 +81,7 @@ passerine_abtotal_compare <- passerine_abtotal %>%
 write_csv(passerine_abtotal_compare, file = here::here("output/abundance_time/passerine_abtotal_compare.csv"))
 ```
 
-```{r}
+```{r, fig.width=3}
 passerine_abtotal_compare %>% 
   ggplot(aes(x=as.factor(yearF), y=abtotalavg)) + 
   geom_bar(stat="identity", position = "dodge2", fill="gray") + 
