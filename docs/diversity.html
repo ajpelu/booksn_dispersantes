@@ -382,7 +382,7 @@ div.tocify {
 <div class="tab-content">
 <div id="summary" class="tab-pane fade in active">
 <p>
-<strong>Last updated:</strong> 2021-05-06
+<strong>Last updated:</strong> 2021-05-07
 </p>
 <p>
 <strong>Checks:</strong> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> 7 <span class="glyphicon glyphicon-exclamation-sign text-danger" aria-hidden="true"></span> 0
@@ -473,16 +473,16 @@ This reproducible <a href="http://rmarkdown.rstudio.com">R Markdown</a> analysis
 <div class="panel panel-default">
 <div class="panel-heading">
 <p class="panel-title">
-<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomajpelubooksndispersantestree4ef40a75f3c7c1e52f26ffb917a4b4c308a81d37targetblank4ef40a7a"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Repository version:</strong> <a href="https://github.com/ajpelu/booksn_dispersantes/tree/4ef40a75f3c7c1e52f26ffb917a4b4c308a81d37" target="_blank">4ef40a7</a> </a>
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomajpelubooksndispersantestree73addc3b695a21bde39cffc6adde6455e8d1be7etargetblank73addc3a"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Repository version:</strong> <a href="https://github.com/ajpelu/booksn_dispersantes/tree/73addc3b695a21bde39cffc6adde6455e8d1be7e" target="_blank">73addc3</a> </a>
 </p>
 </div>
-<div id="strongRepositoryversionstrongahrefhttpsgithubcomajpelubooksndispersantestree4ef40a75f3c7c1e52f26ffb917a4b4c308a81d37targetblank4ef40a7a" class="panel-collapse collapse">
+<div id="strongRepositoryversionstrongahrefhttpsgithubcomajpelubooksndispersantestree73addc3b695a21bde39cffc6adde6455e8d1be7etargetblank73addc3a" class="panel-collapse collapse">
 <div class="panel-body">
 <p>
 Great! You are using Git for version control. Tracking code development and connecting the code version to the results is critical for reproducibility.
 </p>
 <p>
-The results in this page were generated with repository version <a href="https://github.com/ajpelu/booksn_dispersantes/tree/4ef40a75f3c7c1e52f26ffb917a4b4c308a81d37" target="_blank">4ef40a7</a>. See the <em>Past versions</em> tab to see a history of the changes made to the R Markdown and HTML files.
+The results in this page were generated with repository version <a href="https://github.com/ajpelu/booksn_dispersantes/tree/73addc3b695a21bde39cffc6adde6455e8d1be7e" target="_blank">73addc3</a>. See the <em>Past versions</em> tab to see a history of the changes made to the R Markdown and HTML files.
 </p>
 <p>
 Note that you need to be careful to ensure that all relevant files for the analysis have been committed to Git prior to generating the results (you can use <code>wflow_publish</code> or <code>wflow_git_commit</code>). workflowr only checks the R Markdown file, but you know if there are other scripts or data files that it depends on. Below is the status of the Git repository when the results were generated:
@@ -494,9 +494,15 @@ Ignored files:
     Ignored:    data/.DS_Store
 
 Untracked files:
+    Untracked:  analysis/composed_plots.Rmd
+    Untracked:  analysis/turnover.Rmd
     Untracked:  data/passerine_ab.csv
     Untracked:  data/passerine_abbrev.csv
+    Untracked:  output/abundance_time/passerine_abtotal.csv
+    Untracked:  output/abundance_time/passerine_abtotal_compare.csv
     Untracked:  output/diversity/alfa_diversity.csv
+    Untracked:  output/diversity/richness.csv
+    Untracked:  output/turnover/
 
 Unstaged changes:
     Deleted:    analysis/temporal-beta-diveristy.Rmd
@@ -545,6 +551,40 @@ Message
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/ajpelu/booksn_dispersantes/blob/73addc3b695a21bde39cffc6adde6455e8d1be7e/analysis/diversity.Rmd" target="_blank">73addc3</a>
+</td>
+<td>
+Antonio J Perez-Luque
+</td>
+<td>
+2021-05-07
+</td>
+<td>
+add richness analysis
+</td>
+</tr>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/ajpelu/booksn_dispersantes/dad5db5887b1246fa34578e5e5320bab40badcde/docs/diversity.html" target="_blank">dad5db5</a>
+</td>
+<td>
+Antonio J Perez-Luque
+</td>
+<td>
+2021-05-06
+</td>
+<td>
+Build site.
+</td>
+</tr>
 <tr>
 <td>
 Rmd
@@ -760,6 +800,61 @@ shannon %&gt;%
   ) + 
   ylab(&quot;Shannon Index (H&#39;)&quot;) + xlab(&quot;&quot;)</code></pre>
 <p><img src="figure/diversity.Rmd/unnamed-chunk-3-1.png" width="288" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-3-1">
+Past versions of unnamed-chunk-3-1.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-3-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/ajpelu/booksn_dispersantes/blob/dad5db5887b1246fa34578e5e5320bab40badcde/docs/figure/diversity.Rmd/unnamed-chunk-3-1.png" target="_blank">dad5db5</a>
+</td>
+<td>
+Antonio J Perez-Luque
+</td>
+<td>
+2021-05-06
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<div id="richness" class="section level2">
+<h2>Richness</h2>
+<pre class="r"><code>richness &lt;- passerine.ab %&gt;% 
+  group_by(habitat, year) %&gt;% 
+  summarise(richness = length(sp))
+write_csv(richness, here::here(&quot;output/diversity/richness.csv&quot;))</code></pre>
+<pre class="r"><code>richness %&gt;% 
+  ggplot(aes(as.factor(year), richness)) +
+  geom_point() + 
+  geom_path(aes(group=habitat)) + 
+  facet_wrap(~habitat, nrow = 3) + 
+  ylab(&quot;Richness (n sps)&quot;) + xlab(&quot;&quot;) + 
+  theme_bw() + 
+  theme(
+    panel.grid.minor = element_blank(),
+    strip.background = element_blank()
+  )</code></pre>
+<p><img src="figure/diversity.Rmd/unnamed-chunk-5-1.png" width="672" style="display: block; margin: auto;" /></p>
 <br>
 <p>
 <button type="button" class="btn btn-default btn-workflowr btn-workflowr-sessioninfo" data-toggle="collapse" data-target="#workflowr-sessioninfo" style="display: block;">
@@ -806,6 +901,7 @@ loaded via a namespace (and not attached):
 [57] tools_4.0.2       glue_1.4.2        hms_1.0.0         parallel_4.0.2   
 [61] yaml_2.2.1        colorspace_2.0-0  cluster_2.1.0     rvest_0.3.6      
 [65] knitr_1.31        haven_2.3.1       sass_0.3.1       </code></pre>
+</div>
 </div>
 </div>
 
