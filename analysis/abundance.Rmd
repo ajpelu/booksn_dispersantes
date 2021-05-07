@@ -1,0 +1,104 @@
+---
+title: "abundance"
+author: "Antonio J Perez-Luque"
+date: "2021-05-07"
+output: workflowr::wflow_html
+editor_options:
+  chunk_output_type: console
+---
+
+## Introduction
+
+
+---
+title: "turnover"
+author: "Antonio J Perez-Luque"
+date: "2021-05-07"
+output: workflowr::wflow_html
+editor_options:
+  chunk_output_type: console
+---
+
+## Abundance Analysis
+
+```{r load-pkgs}
+library("tidyverse")
+library("here")
+library("DT")
+```
+
+```{r}
+passerine <- read_csv(here::here("data/passerine.csv")) 
+passerine_abbreviations <- read_csv(here::here("data/passerine_abbrev.csv")) 
+
+passerine.ab <- passerine %>% 
+  rename(sp = sp.abb) %>% 
+  dplyr::select(-especie) %>% 
+  group_by(sp, year, habitat) %>% 
+  summarise(ab_avg = round(mean(den, na.rm=TRUE),2), 
+            sd = sd(den, na.rm = TRUE), 
+            se = sd/sqrt(length(den)), 
+            n = length(den))
+
+passerine_abtotal <- passerine.ab %>% 
+  group_by(year, habitat) %>% 
+  summarise(abtotal = round(mean(ab_avg, na.rm=TRUE),2), 
+            sd = sd(ab_avg, na.rm = TRUE), 
+            se = sd/sqrt(length(ab_avg)))
+
+write_csv(passerine_abtotal, file = here::here("output/abundance_time/passerine_abtotal.csv"))
+```
+
+
+```{r, fig.width=4}
+passerine_abtotal %>% 
+  ggplot(aes(x=as.factor(year), y=abtotal, group=habitat)) + 
+  geom_errorbar(aes(ymin = abtotal - se, 
+                    ymax = abtotal + se),
+                width = 0.2) +
+  geom_point() + 
+  geom_path(aes(group=habitat)) + 
+  facet_wrap(~habitat, nrow = 3) + 
+  ylab("Total abundance (ind / 10ha)") + xlab("") + 
+  theme_bw() + 
+  theme(
+    panel.grid.minor = element_blank(),
+    strip.background = element_blank()
+  )
+```
+
+
+
+```{r}
+passerine_abtotal_compare <- passerine_abtotal %>% 
+  filter(year %in% c(1981:1985, 2008:2009, 2017:2018)) %>% 
+  mutate(yearF = case_when(
+    year %in% c(1981:1985) ~ 1983, 
+    year %in% c(2008:2009) ~ 2009,
+    year %in% c(2017:2018) ~ 2018
+  )) %>% 
+  group_by(yearF, habitat) %>% 
+  summarise(abtotalavg = round(mean(abtotal, na.rm=TRUE),2), 
+            sd = sd(abtotal, na.rm = TRUE), 
+            se = sd/sqrt(length(abtotal)))
+
+write_csv(passerine_abtotal_compare, file = here::here("output/abundance_time/passerine_abtotal_compare.csv"))
+```
+
+```{r}
+passerine_abtotal_compare %>% 
+  ggplot(aes(x=as.factor(yearF), y=abtotalavg)) + 
+  geom_bar(stat="identity", position = "dodge2", fill="gray") + 
+  geom_errorbar(aes(ymax = abtotalavg + sd, ymin= abtotalavg - sd), 
+                width = .2, size = .3, color="gray") + 
+  facet_wrap(~habitat, nrow=3) + 
+  theme_bw() + 
+  theme(
+    panel.grid = element_blank(),
+    strip.background = element_blank()
+  ) +
+  ylab("abundance (ind / 10ha)") + xlab("") 
+```
+
+
+
