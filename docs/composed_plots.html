@@ -11,9 +11,9 @@
 
 <meta name="author" content="Antonio J Perez-Luque" />
 
-<meta name="date" content="2021-05-03" />
+<meta name="date" content="2021-05-06" />
 
-<title>diversity</title>
+<title>composed_plots</title>
 
 <script src="site_libs/header-attrs-2.6.6/header-attrs.js"></script>
 <script src="site_libs/jquery-1.11.3/jquery.min.js"></script>
@@ -355,9 +355,9 @@ div.tocify {
 
 
 
-<h1 class="title toc-ignore">diversity</h1>
+<h1 class="title toc-ignore">composed_plots</h1>
 <h4 class="author">Antonio J Perez-Luque</h4>
-<h4 class="date">2021-05-03</h4>
+<h4 class="date">2021-05-06</h4>
 
 </div>
 
@@ -531,7 +531,7 @@ Note that any generated files, e.g. HTML, png, CSS, etc., are not included in t
 <div id="versions" class="tab-pane fade">
 
 <p>
-These are the previous versions of the repository in which changes were made to the R Markdown (<code>analysis/diversity.Rmd</code>) and HTML (<code>docs/diversity.html</code>) files. If you’ve configured a remote Git repository (see <code>?wflow_git_remote</code>), click on the hyperlinks in the table below to view the files as they were in that past version.
+These are the previous versions of the repository in which changes were made to the R Markdown (<code>analysis/composed_plots.Rmd</code>) and HTML (<code>docs/composed_plots.html</code>) files. If you’ve configured a remote Git repository (see <code>?wflow_git_remote</code>), click on the hyperlinks in the table below to view the files as they were in that past version.
 </p>
 <div class="table-responsive">
 <table class="table table-condensed table-hover">
@@ -557,10 +557,10 @@ Message
 <tbody>
 <tr>
 <td>
-html
+Rmd
 </td>
 <td>
-<a href="https://rawcdn.githack.com/ajpelu/booksn_dispersantes/ce17a5789452dc848a249a0e80ac0a5df6711b9f/docs/diversity.html" target="_blank">ce17a57</a>
+<a href="https://github.com/ajpelu/booksn_dispersantes/blob/366c18458ea2a7c5fdee551782d1ab5b739edbda/analysis/composed_plots.Rmd" target="_blank">366c184</a>
 </td>
 <td>
 Antonio J Perez-Luque
@@ -569,92 +569,7 @@ Antonio J Perez-Luque
 2021-05-07
 </td>
 <td>
-Build site.
-</td>
-</tr>
-<tr>
-<td>
-Rmd
-</td>
-<td>
-<a href="https://github.com/ajpelu/booksn_dispersantes/blob/73addc3b695a21bde39cffc6adde6455e8d1be7e/analysis/diversity.Rmd" target="_blank">73addc3</a>
-</td>
-<td>
-Antonio J Perez-Luque
-</td>
-<td>
-2021-05-07
-</td>
-<td>
-add richness analysis
-</td>
-</tr>
-<tr>
-<td>
-html
-</td>
-<td>
-<a href="https://rawcdn.githack.com/ajpelu/booksn_dispersantes/dad5db5887b1246fa34578e5e5320bab40badcde/docs/diversity.html" target="_blank">dad5db5</a>
-</td>
-<td>
-Antonio J Perez-Luque
-</td>
-<td>
-2021-05-06
-</td>
-<td>
-Build site.
-</td>
-</tr>
-<tr>
-<td>
-Rmd
-</td>
-<td>
-<a href="https://github.com/ajpelu/booksn_dispersantes/blob/4ef40a75f3c7c1e52f26ffb917a4b4c308a81d37/analysis/diversity.Rmd" target="_blank">4ef40a7</a>
-</td>
-<td>
-Antonio J Perez-Luque
-</td>
-<td>
-2021-05-06
-</td>
-<td>
-compare diversity by temporal steps
-</td>
-</tr>
-<tr>
-<td>
-html
-</td>
-<td>
-<a href="https://rawcdn.githack.com/ajpelu/booksn_dispersantes/12af27d4478957e48b9ad495570ce00d048741d8/docs/diversity.html" target="_blank">12af27d</a>
-</td>
-<td>
-Antonio J Perez-Luque
-</td>
-<td>
-2021-05-03
-</td>
-<td>
-Build site.
-</td>
-</tr>
-<tr>
-<td>
-Rmd
-</td>
-<td>
-<a href="https://github.com/ajpelu/booksn_dispersantes/blob/530618976c7788537321fe17e7ad8477b5dacb2d/analysis/diversity.Rmd" target="_blank">5306189</a>
-</td>
-<td>
-Antonio J Perez-Luque
-</td>
-<td>
-2021-05-03
-</td>
-<td>
-compute diversity (alpha) analysis
+update repo
 </td>
 </tr>
 </tbody>
@@ -664,136 +579,18 @@ compute diversity (alpha) analysis
 </div>
 </div>
 </div>
-<div id="diversity-analysis" class="section level1">
-<h1>Diversity analysis</h1>
-<ul>
-<li>Compute Simpson and Shannon diversity index. See diversity functions in vegan pkg.</li>
-</ul>
+<div id="introduction" class="section level2">
+<h2>Introduction</h2>
 <pre class="r"><code>knitr::opts_chunk$set(echo = TRUE, 
                       warning = FALSE, 
                       message = FALSE)</code></pre>
 <pre class="r"><code>library(&quot;tidyverse&quot;)
-library(&quot;here&quot;)
-library(&quot;vegan&quot;)</code></pre>
-<pre class="r"><code>passerine &lt;- read_csv(here::here(&quot;data/passerine.csv&quot;)) 
-passerine_abbreviations &lt;- read_csv(here::here(&quot;data/passerine_abbrev.csv&quot;)) 
-
-passerine.ab &lt;- passerine %&gt;% 
-  rename(sp = sp.abb) %&gt;% 
-  dplyr::select(-especie) %&gt;% 
-  group_by(sp, year, habitat) %&gt;% 
-  summarise(ab_avg = round(mean(den, na.rm=TRUE),2), 
-            sd = sd(den, na.rm = TRUE), 
-            se = sd/sqrt(length(den)), 
-            n = length(den))
-
-df &lt;- passerine.ab %&gt;% 
-  unite(&quot;site&quot;, habitat:year, sep=&quot;_&quot;, remove = FALSE) %&gt;% 
-  dplyr::select(-sd, -se, -n) %&gt;% 
-  pivot_wider(names_from = sp, 
-              values_from = ab_avg, 
-              values_fill = 0)</code></pre>
-<p>Create a function to compute Simpson and Shannon diversity indices</p>
-<pre class="r"><code>computeDiversity &lt;- function(d, hab, ...){
-  
-  df.habitat &lt;- d %&gt;% 
-    filter(habitat == hab) %&gt;% 
-  dplyr::select(-habitat, -site) %&gt;% 
-  dplyr::select_if(
-    negate(function(x) is.numeric(x) &amp;&amp; sum(x) == 0)) %&gt;%
-    column_to_rownames(&quot;year&quot;)
-  
-
-  shannon &lt;- diversity(df.habitat, &quot;shannon&quot;) %&gt;%
-    as.data.frame() %&gt;% rownames_to_column(&quot;year&quot;) %&gt;%
-    rename(shannon = starts_with(&quot;.&quot;))
-
-  simpson &lt;- diversity(df.habitat, &quot;simpson&quot;) %&gt;%
-    as.data.frame() %&gt;%
-    rownames_to_column(&quot;year&quot;) %&gt;%
-    rename(simpson = starts_with(&quot;.&quot;))
-
-  diver &lt;- shannon %&gt;%
-  inner_join(simpson) %&gt;%
-  mutate(habitat = hab)
-  
-  return(diver)
-}</code></pre>
+library(&quot;here&quot;)</code></pre>
 <ul>
-<li>Compute diversity index for each site</li>
+<li>Read data of alpha diversity</li>
 </ul>
-<pre class="r"><code>diver.summits &lt;- computeDiversity(df, &quot;cumbres&quot;)
-diver.juniper &lt;- computeDiversity(df, &quot;enebral&quot;)
-diver.robledal &lt;- computeDiversity(df, &quot;robledal&quot;)
-
-diversity_index &lt;- bind_rows(diver.summits, diver.juniper, diver.robledal)
-write_csv(diversity_index, here::here(&quot;output/diversity/alfa_diversity.csv&quot;))</code></pre>
-<pre class="r"><code>diversity_plot &lt;- diversity_index %&gt;% 
-  filter(!(habitat == &quot;cumbres&quot; &amp; year == 2013)) %&gt;% 
-  ggplot(
-  aes(x=year, y=shannon, colour=habitat, group=habitat)) +
-    geom_point() + geom_line() +
-  geom_smooth(method = &quot;lm&quot;, 
-              se=FALSE, size = .5, linetype=&quot;dashed&quot;) + 
-  ylab(&quot;Shannon Index (H&#39;)&quot;) + 
-  theme_bw() + 
-  theme(
-    panel.grid = element_blank(),
-    #panel.grid.major.x = element_blank(),
-    strip.background = element_blank()
-  )
-
-
-ggsave(here::here(&quot;output/diversity/diversity_habitat.pdf&quot;),
-       width = 18, height = 12, units = &quot;cm&quot;)
-diversity_plot</code></pre>
-<p><img src="figure/diversity.Rmd/plot-diversisty-1.png" width="672" style="display: block; margin: auto;" /></p>
-<p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-plot-diversisty-1">
-Past versions of plot-diversisty-1.png
-</button>
-</p>
-<div id="fig-plot-diversisty-1" class="collapse">
-<div class="table-responsive">
-<table class="table table-condensed table-hover">
-<thead>
-<tr>
-<th>
-Version
-</th>
-<th>
-Author
-</th>
-<th>
-Date
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>
-<a href="https://github.com/ajpelu/booksn_dispersantes/blob/12af27d4478957e48b9ad495570ce00d048741d8/docs/figure/diversity.Rmd/plot-diversisty-1.png" target="_blank">12af27d</a>
-</td>
-<td>
-Antonio J Perez-Luque
-</td>
-<td>
-2021-05-03
-</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
-<pre class="r"><code>dev.off()</code></pre>
-<pre><code>null device 
-          1 </code></pre>
-</div>
-<div id="compare-three-temporal-times" class="section level1">
-<h1>Compare three temporal times</h1>
-<ul>
-<li>Generate three temporal times: 1983; 2009: mean for 2008 - 2009; and 2018: mean for 2017 - 2018.</li>
-</ul>
+<pre class="r"><code>diversity_index &lt;- read_csv(here::here(&quot;output/diversity/alfa_diversity.csv&quot;)) 
+tbi &lt;- read_csv(here::here(&quot;output/betadiversity/tbi.csv&quot;))</code></pre>
 <pre class="r"><code>shannon &lt;- diversity_index %&gt;% 
   filter(year %in% c(1981:1985, 2008:2009, 2017:2018)) %&gt;% 
   mutate(yearF = case_when(
@@ -804,9 +601,40 @@ Antonio J Perez-Luque
   group_by(yearF, habitat) %&gt;% 
   summarise(mean = mean(shannon, na.rm=TRUE), 
             sd = sd(shannon, na.rm=TRUE),
-            se = sd/sqrt(length(shannon)))
+            se = sd/sqrt(length(shannon))) %&gt;% 
+  mutate(variable = &quot;shannon&quot;, type = &quot;alpha&quot;)
 
-shannon %&gt;% 
+
+tbi_wide &lt;- tbi %&gt;% 
+  rename(yearF = pair) %&gt;% 
+  dplyr::select(-Change, -year_t0) %&gt;% 
+  pivot_longer(losses:D, values_to = &quot;mean&quot;, names_to = &quot;variable&quot;) %&gt;% 
+  mutate(se = NA, type = &quot;beta&quot;)
+
+
+df &lt;- bind_rows(tbi_wide, (shannon %&gt;% dplyr::select(-sd)))
+
+cols &lt;- c(&quot;D&quot; = &quot;#8d96a3&quot;, &quot;losses&quot; = &quot;#edae49&quot;)
+
+plot_alpha &lt;- tbi_wide %&gt;% 
+  filter(variable != &quot;gains&quot;) %&gt;% 
+  ggplot(aes(x=yearF, y=mean, fill=variable)) + 
+  geom_bar(stat=&quot;identity&quot;, width = .4, position = &quot;dodge2&quot;) + 
+  geom_errorbar(aes(ymax = mean + se, ymin= mean - se), 
+                width = .2, size = .3) +
+  facet_wrap(vars(habitat), nrow=3) + 
+  scale_fill_manual(values = cols) + 
+  theme_bw() +
+  theme(
+    panel.grid.minor = element_blank(),
+    strip.background = element_blank()
+  ) +
+  xlab(&quot;&quot;) +
+  ylab(expression(paste(&quot;Dissimilarity in &quot;, beta, &quot;-diversisty&quot;)))
+
+plot_alpha</code></pre>
+<p><img src="figure/composed_plots.Rmd/unnamed-chunk-1-1.png" width="288" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>shannon %&gt;% 
   ggplot(aes(x=yearF, y=mean, group=1)) + 
   geom_point() +
   geom_line() + 
@@ -820,99 +648,10 @@ shannon %&gt;%
     strip.background = element_blank()
   ) + 
   ylab(&quot;Shannon Index (H&#39;)&quot;) + xlab(&quot;&quot;)</code></pre>
-<p><img src="figure/diversity.Rmd/unnamed-chunk-3-1.png" width="288" style="display: block; margin: auto;" /></p>
-<p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-3-1">
-Past versions of unnamed-chunk-3-1.png
-</button>
-</p>
-<div id="fig-unnamed-chunk-3-1" class="collapse">
-<div class="table-responsive">
-<table class="table table-condensed table-hover">
-<thead>
-<tr>
-<th>
-Version
-</th>
-<th>
-Author
-</th>
-<th>
-Date
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>
-<a href="https://github.com/ajpelu/booksn_dispersantes/blob/dad5db5887b1246fa34578e5e5320bab40badcde/docs/figure/diversity.Rmd/unnamed-chunk-3-1.png" target="_blank">dad5db5</a>
-</td>
-<td>
-Antonio J Perez-Luque
-</td>
-<td>
-2021-05-06
-</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
-<div id="richness" class="section level2">
-<h2>Richness</h2>
-<pre class="r"><code>richness &lt;- passerine.ab %&gt;% 
-  group_by(habitat, year) %&gt;% 
-  summarise(richness = length(sp))
-write_csv(richness, here::here(&quot;output/diversity/richness.csv&quot;))</code></pre>
-<pre class="r"><code>richness %&gt;% 
-  ggplot(aes(as.factor(year), richness)) +
-  geom_point() + 
-  geom_path(aes(group=habitat)) + 
-  facet_wrap(~habitat, nrow = 3) + 
-  ylab(&quot;Richness (n sps)&quot;) + xlab(&quot;&quot;) + 
-  theme_bw() + 
-  theme(
-    panel.grid.minor = element_blank(),
-    strip.background = element_blank()
-  )</code></pre>
-<p><img src="figure/diversity.Rmd/unnamed-chunk-5-1.png" width="672" style="display: block; margin: auto;" /></p>
-<p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-5-1">
-Past versions of unnamed-chunk-5-1.png
-</button>
-</p>
-<div id="fig-unnamed-chunk-5-1" class="collapse">
-<div class="table-responsive">
-<table class="table table-condensed table-hover">
-<thead>
-<tr>
-<th>
-Version
-</th>
-<th>
-Author
-</th>
-<th>
-Date
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>
-<a href="https://github.com/ajpelu/booksn_dispersantes/blob/ce17a5789452dc848a249a0e80ac0a5df6711b9f/docs/figure/diversity.Rmd/unnamed-chunk-5-1.png" target="_blank">ce17a57</a>
-</td>
-<td>
-Antonio J Perez-Luque
-</td>
-<td>
-2021-05-07
-</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
+<p><img src="figure/composed_plots.Rmd/unnamed-chunk-2-1.png" width="288" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>cols &lt;- c(&quot;Shannon Index (H&#39;)&quot; = &quot;#8d96a3&quot;, &quot;Losses&quot; = &quot;#edae49&quot;, &quot;Temporal Beta-Diversity&quot; =&quot;steelblue&quot;)
+
+# &quot;#C4961A&quot;</code></pre>
 <br>
 <p>
 <button type="button" class="btn btn-default btn-workflowr btn-workflowr-sessioninfo" data-toggle="collapse" data-target="#workflowr-sessioninfo" style="display: block;">
@@ -936,30 +675,26 @@ attached base packages:
 [1] stats     graphics  grDevices utils     datasets  methods   base     
 
 other attached packages:
- [1] vegan_2.5-7     lattice_0.20-41 permute_0.9-5   here_1.0.1     
- [5] forcats_0.5.1   stringr_1.4.0   dplyr_1.0.4     purrr_0.3.4    
- [9] readr_1.4.0     tidyr_1.1.2     tibble_3.0.6    ggplot2_3.3.3  
-[13] tidyverse_1.3.0 workflowr_1.6.2
+ [1] here_1.0.1      forcats_0.5.1   stringr_1.4.0   dplyr_1.0.4    
+ [5] purrr_0.3.4     readr_1.4.0     tidyr_1.1.2     tibble_3.0.6   
+ [9] ggplot2_3.3.3   tidyverse_1.3.0 workflowr_1.6.2
 
 loaded via a namespace (and not attached):
- [1] Rcpp_1.0.6        lubridate_1.7.10  assertthat_0.2.1  rprojroot_2.0.2  
- [5] digest_0.6.27     R6_2.5.0          cellranger_1.1.0  backports_1.2.1  
- [9] reprex_1.0.0      evaluate_0.14     highr_0.8         httr_1.4.2       
-[13] pillar_1.4.7      rlang_0.4.10      readxl_1.3.1      rstudioapi_0.13  
-[17] whisker_0.4       jquerylib_0.1.3   Matrix_1.3-2      rmarkdown_2.6.6  
-[21] labeling_0.4.2    splines_4.0.2     munsell_0.5.0     broom_0.7.4      
-[25] compiler_4.0.2    httpuv_1.5.5      modelr_0.1.8      xfun_0.20        
-[29] pkgconfig_2.0.3   mgcv_1.8-33       htmltools_0.5.1.1 tidyselect_1.1.0 
-[33] crayon_1.4.1      dbplyr_2.1.0      withr_2.4.1       later_1.1.0.1    
-[37] MASS_7.3-53       grid_4.0.2        nlme_3.1-152      jsonlite_1.7.2   
-[41] gtable_0.3.0      lifecycle_1.0.0   DBI_1.1.1         git2r_0.28.0     
-[45] magrittr_2.0.1    scales_1.1.1      cli_2.3.0         stringi_1.5.3    
-[49] farver_2.0.3      fs_1.5.0          promises_1.2.0.1  xml2_1.3.2       
-[53] bslib_0.2.4       ellipsis_0.3.1    generics_0.1.0    vctrs_0.3.6      
-[57] tools_4.0.2       glue_1.4.2        hms_1.0.0         parallel_4.0.2   
-[61] yaml_2.2.1        colorspace_2.0-0  cluster_2.1.0     rvest_0.3.6      
-[65] knitr_1.31        haven_2.3.1       sass_0.3.1       </code></pre>
-</div>
+ [1] tidyselect_1.1.0  xfun_0.20         bslib_0.2.4       haven_2.3.1      
+ [5] colorspace_2.0-0  vctrs_0.3.6       generics_0.1.0    htmltools_0.5.1.1
+ [9] yaml_2.2.1        rlang_0.4.10      jquerylib_0.1.3   later_1.1.0.1    
+[13] pillar_1.4.7      withr_2.4.1       glue_1.4.2        DBI_1.1.1        
+[17] dbplyr_2.1.0      modelr_0.1.8      readxl_1.3.1      lifecycle_1.0.0  
+[21] munsell_0.5.0     gtable_0.3.0      cellranger_1.1.0  rvest_0.3.6      
+[25] evaluate_0.14     labeling_0.4.2    knitr_1.31        httpuv_1.5.5     
+[29] highr_0.8         broom_0.7.4       Rcpp_1.0.6        promises_1.2.0.1 
+[33] backports_1.2.1   scales_1.1.1      jsonlite_1.7.2    farver_2.0.3     
+[37] fs_1.5.0          hms_1.0.0         digest_0.6.27     stringi_1.5.3    
+[41] rprojroot_2.0.2   grid_4.0.2        cli_2.3.0         tools_4.0.2      
+[45] magrittr_2.0.1    sass_0.3.1        crayon_1.4.1      whisker_0.4      
+[49] pkgconfig_2.0.3   ellipsis_0.3.1    xml2_1.3.2        reprex_1.0.0     
+[53] lubridate_1.7.10  rstudioapi_0.13   assertthat_0.2.1  rmarkdown_2.6.6  
+[57] httr_1.4.2        R6_2.5.0          git2r_0.28.0      compiler_4.0.2   </code></pre>
 </div>
 </div>
 

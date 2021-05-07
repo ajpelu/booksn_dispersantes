@@ -333,16 +333,16 @@ This reproducible <a href="http://rmarkdown.rstudio.com">R Markdown</a> analysis
 <div class="panel panel-default">
 <div class="panel-heading">
 <p class="panel-title">
-<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomajpelubooksndispersantestreed1f275cc3a9654cfed6559ef417ffae58ff4fc42targetblankd1f275ca"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Repository version:</strong> <a href="https://github.com/ajpelu/booksn_dispersantes/tree/d1f275cc3a9654cfed6559ef417ffae58ff4fc42" target="_blank">d1f275c</a> </a>
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomajpelubooksndispersantestree366c18458ea2a7c5fdee551782d1ab5b739edbdatargetblank366c184a"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Repository version:</strong> <a href="https://github.com/ajpelu/booksn_dispersantes/tree/366c18458ea2a7c5fdee551782d1ab5b739edbda" target="_blank">366c184</a> </a>
 </p>
 </div>
-<div id="strongRepositoryversionstrongahrefhttpsgithubcomajpelubooksndispersantestreed1f275cc3a9654cfed6559ef417ffae58ff4fc42targetblankd1f275ca" class="panel-collapse collapse">
+<div id="strongRepositoryversionstrongahrefhttpsgithubcomajpelubooksndispersantestree366c18458ea2a7c5fdee551782d1ab5b739edbdatargetblank366c184a" class="panel-collapse collapse">
 <div class="panel-body">
 <p>
 Great! You are using Git for version control. Tracking code development and connecting the code version to the results is critical for reproducibility.
 </p>
 <p>
-The results in this page were generated with repository version <a href="https://github.com/ajpelu/booksn_dispersantes/tree/d1f275cc3a9654cfed6559ef417ffae58ff4fc42" target="_blank">d1f275c</a>. See the <em>Past versions</em> tab to see a history of the changes made to the R Markdown and HTML files.
+The results in this page were generated with repository version <a href="https://github.com/ajpelu/booksn_dispersantes/tree/366c18458ea2a7c5fdee551782d1ab5b739edbda" target="_blank">366c184</a>. See the <em>Past versions</em> tab to see a history of the changes made to the R Markdown and HTML files.
 </p>
 <p>
 Note that you need to be careful to ensure that all relevant files for the analysis have been committed to Git prior to generating the results (you can use <code>wflow_publish</code> or <code>wflow_git_commit</code>). workflowr only checks the R Markdown file, but you know if there are other scripts or data files that it depends on. Below is the status of the Git repository when the results were generated:
@@ -354,22 +354,26 @@ Ignored files:
     Ignored:    data/.DS_Store
 
 Untracked files:
-    Untracked:  analysis/composed_plots.Rmd
-    Untracked:  analysis/turnover.Rmd
     Untracked:  data/passerine_ab.csv
     Untracked:  data/passerine_abbrev.csv
     Untracked:  output/abundance_time/passerine_abtotal.csv
     Untracked:  output/abundance_time/passerine_abtotal_compare.csv
     Untracked:  output/diversity/alfa_diversity.csv
+    Untracked:  output/diversity/richness.csv
     Untracked:  output/turnover/
 
 Unstaged changes:
-    Modified:   analysis/diversity.Rmd
     Deleted:    analysis/temporal-beta-diveristy.Rmd
     Modified:   code/computeTBI.R
     Modified:   data/birds.csv
     Deleted:    data/data_raw/~$Aves_SN_meses_reproduccion.xlsx
     Modified:   data/passerine.csv
+    Modified:   output/abundance_time/plot_all_cumbres.pdf
+    Modified:   output/abundance_time/plot_all_enebral.pdf
+    Modified:   output/abundance_time/plot_all_robledal.pdf
+    Modified:   output/abundance_time/plot_selected_cumbres.pdf
+    Modified:   output/abundance_time/plot_selected_enebral.pdf
+    Modified:   output/abundance_time/plot_selected_robledal.pdf
     Modified:   output/betadiversity/plot_betadiversity.pdf
     Modified:   output/diversity/diversity_habitat.pdf
     Modified:   output/mktrend/plot_mktrend.pdf
@@ -411,6 +415,40 @@ Message
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/ajpelu/booksn_dispersantes/blob/366c18458ea2a7c5fdee551782d1ab5b739edbda/analysis/index.Rmd" target="_blank">366c184</a>
+</td>
+<td>
+Antonio J Perez-Luque
+</td>
+<td>
+2021-05-07
+</td>
+<td>
+update repo
+</td>
+</tr>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/ajpelu/booksn_dispersantes/45b48fdd0ea97478070545dab8d52b9b4682b1e1/docs/index.html" target="_blank">45b48fd</a>
+</td>
+<td>
+Antonio J Perez-Luque
+</td>
+<td>
+2021-05-07
+</td>
+<td>
+Build site.
+</td>
+</tr>
 <tr>
 <td>
 Rmd
@@ -799,7 +837,9 @@ Start workflowr project.
 <li><p><a href="diversity.html"><strong>Diversity analysis</strong></a> (alpha-divesity) could be found. Graphic outputs are stored at <code>/output/diversity</code>).</p></li>
 <li><p><a href="temporal-beta-diversity.html"><strong>Beta-diversity</strong></a> analysis. Graphic outputs are stored at <code>/output/betadiversity</code>).</p></li>
 <li><p><a href="trend-analysis.html"><strong>Trend analysis (Mann-Kendall analysis)</strong></a> could be found. Graphic outputs are stored at <code>/output/mktrend</code>).</p></li>
-<li><p>Explore <a href="abundance.html"><strong>abundance</strong></a> trends by habitat**. Graphic outputs are stored at <code>/output/mktrend</code>).</p></li>
+<li><p>Explore <a href="abundance.html"><strong>abundance</strong></a>. Graphic outputs are stored at <code>/output/mktrend</code>).</p></li>
+<li><p><a href="turnover.html"><strong>Turnover analysis</strong></a>. Graphic outputs are stored at <code>/output/mktrend</code>).</p></li>
+<li><p><a href="composed_plot.html"><strong>Composed plot</strong></a>. Graphic outputs are stored at <code>/output/mktrend</code>).</p></li>
 </ul>
 
 
