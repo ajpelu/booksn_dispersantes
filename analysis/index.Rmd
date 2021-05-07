@@ -14,8 +14,10 @@ Notebook about analysis of bird census data (Book SN)
 
 - A first [data exploration analysis](explore-trends.html) was done for the abundance by species. We plotted the abundance of all species by habitat, and then only those species with more than three years along the time period analysed (see `plot_all_HABITAT.pdf` or `plot_selected_HABITAT.pdf` files in `/output/abundance_time`). 
 
-- **Diversity analysis** (alpha-divesity) could be found [here](diversity.html). Graphic outputs are stored at  `/output/diversity`). 
+- [**Diversity analysis**](diversity.html) (alpha-divesity) could be found. Graphic outputs are stored at  `/output/diversity`). 
 
-- **Beta-diversity** analysis could be found [here](temporal-beta-diversity.html). Graphic outputs are stored at  `/output/betadiversity`). 
+- [**Beta-diversity**](temporal-beta-diversity.html) analysis. Graphic outputs are stored at  `/output/betadiversity`). 
 
-- **Trend analysis (Mann-Kendall analysis)** could be found [here](trend-analysis.html). Graphic outputs are stored at  `/output/mktrend`). 
+- [**Trend analysis (Mann-Kendall analysis)**](trend-analysis.html) could be found. Graphic outputs are stored at  `/output/mktrend`). 
+
+- Explore [**abundance**](abundance.html) trends by habitat**. Graphic outputs are stored at  `/output/mktrend`). 
