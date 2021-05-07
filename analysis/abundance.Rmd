@@ -21,6 +21,13 @@ editor_options:
 
 ## Abundance Analysis
 
+```{r, set-global-options}
+knitr::opts_chunk$set(echo = TRUE, 
+                      warning = FALSE, 
+                      message = FALSE)
+```
+
+
 ```{r load-pkgs}
 library("tidyverse")
 library("here")
