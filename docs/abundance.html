@@ -473,16 +473,16 @@ This reproducible <a href="http://rmarkdown.rstudio.com">R Markdown</a> analysis
 <div class="panel panel-default">
 <div class="panel-heading">
 <p class="panel-title">
-<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomajpelubooksndispersantestree94ab459050f43d9d81f4fc9e4efe2ada960fc4dctargetblank94ab459a"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Repository version:</strong> <a href="https://github.com/ajpelu/booksn_dispersantes/tree/94ab459050f43d9d81f4fc9e4efe2ada960fc4dc" target="_blank">94ab459</a> </a>
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomajpelubooksndispersantestree24a2d6d51de21b712163c97e1b257e00a1caea7ctargetblank24a2d6da"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Repository version:</strong> <a href="https://github.com/ajpelu/booksn_dispersantes/tree/24a2d6d51de21b712163c97e1b257e00a1caea7c" target="_blank">24a2d6d</a> </a>
 </p>
 </div>
-<div id="strongRepositoryversionstrongahrefhttpsgithubcomajpelubooksndispersantestree94ab459050f43d9d81f4fc9e4efe2ada960fc4dctargetblank94ab459a" class="panel-collapse collapse">
+<div id="strongRepositoryversionstrongahrefhttpsgithubcomajpelubooksndispersantestree24a2d6d51de21b712163c97e1b257e00a1caea7ctargetblank24a2d6da" class="panel-collapse collapse">
 <div class="panel-body">
 <p>
 Great! You are using Git for version control. Tracking code development and connecting the code version to the results is critical for reproducibility.
 </p>
 <p>
-The results in this page were generated with repository version <a href="https://github.com/ajpelu/booksn_dispersantes/tree/94ab459050f43d9d81f4fc9e4efe2ada960fc4dc" target="_blank">94ab459</a>. See the <em>Past versions</em> tab to see a history of the changes made to the R Markdown and HTML files.
+The results in this page were generated with repository version <a href="https://github.com/ajpelu/booksn_dispersantes/tree/24a2d6d51de21b712163c97e1b257e00a1caea7c" target="_blank">24a2d6d</a>. See the <em>Past versions</em> tab to see a history of the changes made to the R Markdown and HTML files.
 </p>
 <p>
 Note that you need to be careful to ensure that all relevant files for the analysis have been committed to Git prior to generating the results (you can use <code>wflow_publish</code> or <code>wflow_git_commit</code>). workflowr only checks the R Markdown file, but you know if there are other scripts or data files that it depends on. Below is the status of the Git repository when the results were generated:
@@ -556,6 +556,40 @@ Message
 Rmd
 </td>
 <td>
+<a href="https://github.com/ajpelu/booksn_dispersantes/blob/24a2d6d51de21b712163c97e1b257e00a1caea7c/analysis/abundance.Rmd" target="_blank">24a2d6d</a>
+</td>
+<td>
+Antonio J Perez-Luque
+</td>
+<td>
+2021-05-07
+</td>
+<td>
+add data of abundance, remove warnings
+</td>
+</tr>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/ajpelu/booksn_dispersantes/a7fc123e866fe2fde9f51e9e7dd5600fc65fd157/docs/abundance.html" target="_blank">a7fc123</a>
+</td>
+<td>
+Antonio J Perez-Luque
+</td>
+<td>
+2021-05-07
+</td>
+<td>
+Build site.
+</td>
+</tr>
+<tr>
+<td>
+Rmd
+</td>
+<td>
 <a href="https://github.com/ajpelu/booksn_dispersantes/blob/94ab459050f43d9d81f4fc9e4efe2ada960fc4dc/analysis/abundance.Rmd" target="_blank">94ab459</a>
 </td>
 <td>
@@ -580,54 +614,31 @@ add data of abundance
 </div>
 <div id="abundance-analysis" class="section level2">
 <h2>Abundance Analysis</h2>
-<pre class="r"><code>library(&quot;tidyverse&quot;)</code></pre>
-<pre><code>── Attaching packages ─────────────────────────────────────── tidyverse 1.3.0 ──</code></pre>
-<pre><code>✓ ggplot2 3.3.3     ✓ purrr   0.3.4
-✓ tibble  3.0.6     ✓ dplyr   1.0.4
-✓ tidyr   1.1.2     ✓ stringr 1.4.0
-✓ readr   1.4.0     ✓ forcats 0.5.1</code></pre>
-<pre><code>── Conflicts ────────────────────────────────────────── tidyverse_conflicts() ──
-x dplyr::filter() masks stats::filter()
-x dplyr::lag()    masks stats::lag()</code></pre>
-<pre class="r"><code>library(&quot;here&quot;)</code></pre>
-<pre><code>here() starts at /Users/ajpelu/Google Drive/MS/books/2021_SN/booksn_dispersantes</code></pre>
-<pre class="r"><code>library(&quot;DT&quot;)</code></pre>
-<pre class="r"><code>passerine &lt;- read_csv(here::here(&quot;data/passerine.csv&quot;)) </code></pre>
-<pre><code>
-── Column specification ────────────────────────────────────────────────────────
-cols(
-  especie = col_character(),
-  fecha = col_date(format = &quot;&quot;),
-  den = col_double(),
-  habitat = col_character(),
-  cota = col_double(),
-  mes = col_double(),
-  year = col_double(),
-  sp.abb = col_character()
-)</code></pre>
-<pre class="r"><code>passerine_abbreviations &lt;- read_csv(here::here(&quot;data/passerine_abbrev.csv&quot;)) </code></pre>
-<pre><code>
-── Column specification ────────────────────────────────────────────────────────
-cols(
-  especie = col_character(),
-  sp.abb = col_character()
-)</code></pre>
-<pre class="r"><code>passerine.ab &lt;- passerine %&gt;% 
+<pre class="r"><code>knitr::opts_chunk$set(echo = TRUE, 
+                      warning = FALSE, 
+                      message = FALSE)</code></pre>
+<pre class="r"><code>library(&quot;tidyverse&quot;)
+library(&quot;here&quot;)
+library(&quot;DT&quot;)</code></pre>
+<pre class="r"><code>passerine &lt;- read_csv(here::here(&quot;data/passerine.csv&quot;)) 
+passerine_abbreviations &lt;- read_csv(here::here(&quot;data/passerine_abbrev.csv&quot;)) 
+
+passerine.ab &lt;- passerine %&gt;% 
   rename(sp = sp.abb) %&gt;% 
   dplyr::select(-especie) %&gt;% 
   group_by(sp, year, habitat) %&gt;% 
   summarise(ab_avg = round(mean(den, na.rm=TRUE),2), 
             sd = sd(den, na.rm = TRUE), 
             se = sd/sqrt(length(den)), 
-            n = length(den))</code></pre>
-<pre><code>`summarise()` has grouped output by &#39;sp&#39;, &#39;year&#39;. You can override using the `.groups` argument.</code></pre>
-<pre class="r"><code>passerine_abtotal &lt;- passerine.ab %&gt;% 
+            n = length(den))
+
+passerine_abtotal &lt;- passerine.ab %&gt;% 
   group_by(year, habitat) %&gt;% 
   summarise(abtotal = round(mean(ab_avg, na.rm=TRUE),2), 
             sd = sd(ab_avg, na.rm = TRUE), 
-            se = sd/sqrt(length(ab_avg)))</code></pre>
-<pre><code>`summarise()` has grouped output by &#39;year&#39;. You can override using the `.groups` argument.</code></pre>
-<pre class="r"><code>write_csv(passerine_abtotal, file = here::here(&quot;output/abundance_time/passerine_abtotal.csv&quot;))</code></pre>
+            se = sd/sqrt(length(ab_avg)))
+
+write_csv(passerine_abtotal, file = here::here(&quot;output/abundance_time/passerine_abtotal.csv&quot;))</code></pre>
 <pre class="r"><code>passerine_abtotal %&gt;% 
   ggplot(aes(x=as.factor(year), y=abtotal, group=habitat)) + 
   geom_errorbar(aes(ymin = abtotal - se, 
@@ -643,6 +654,43 @@ cols(
     strip.background = element_blank()
   )</code></pre>
 <p><img src="figure/abundance.Rmd/unnamed-chunk-2-1.png" width="384" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-2-1">
+Past versions of unnamed-chunk-2-1.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-2-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/ajpelu/booksn_dispersantes/blob/a7fc123e866fe2fde9f51e9e7dd5600fc65fd157/docs/figure/abundance.Rmd/unnamed-chunk-2-1.png" target="_blank">a7fc123</a>
+</td>
+<td>
+Antonio J Perez-Luque
+</td>
+<td>
+2021-05-07
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre class="r"><code>passerine_abtotal_compare &lt;- passerine_abtotal %&gt;% 
   filter(year %in% c(1981:1985, 2008:2009, 2017:2018)) %&gt;% 
   mutate(yearF = case_when(
@@ -653,9 +701,9 @@ cols(
   group_by(yearF, habitat) %&gt;% 
   summarise(abtotalavg = round(mean(abtotal, na.rm=TRUE),2), 
             sd = sd(abtotal, na.rm = TRUE), 
-            se = sd/sqrt(length(abtotal)))</code></pre>
-<pre><code>`summarise()` has grouped output by &#39;yearF&#39;. You can override using the `.groups` argument.</code></pre>
-<pre class="r"><code>write_csv(passerine_abtotal_compare, file = here::here(&quot;output/abundance_time/passerine_abtotal_compare.csv&quot;))</code></pre>
+            se = sd/sqrt(length(abtotal)))
+
+write_csv(passerine_abtotal_compare, file = here::here(&quot;output/abundance_time/passerine_abtotal_compare.csv&quot;))</code></pre>
 <pre class="r"><code>passerine_abtotal_compare %&gt;% 
   ggplot(aes(x=as.factor(yearF), y=abtotalavg)) + 
   geom_bar(stat=&quot;identity&quot;, position = &quot;dodge2&quot;, fill=&quot;gray&quot;) + 
@@ -669,6 +717,43 @@ cols(
   ) +
   ylab(&quot;abundance (ind / 10ha)&quot;) + xlab(&quot;&quot;) </code></pre>
 <p><img src="figure/abundance.Rmd/unnamed-chunk-4-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-4-1">
+Past versions of unnamed-chunk-4-1.png
+</button>
+</p>
+<div id="fig-unnamed-chunk-4-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/ajpelu/booksn_dispersantes/blob/a7fc123e866fe2fde9f51e9e7dd5600fc65fd157/docs/figure/abundance.Rmd/unnamed-chunk-4-1.png" target="_blank">a7fc123</a>
+</td>
+<td>
+Antonio J Perez-Luque
+</td>
+<td>
+2021-05-07
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <br>
 <p>
 <button type="button" class="btn btn-default btn-workflowr btn-workflowr-sessioninfo" data-toggle="collapse" data-target="#workflowr-sessioninfo" style="display: block;">
