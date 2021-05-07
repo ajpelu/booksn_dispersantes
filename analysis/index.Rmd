@@ -20,4 +20,9 @@ Notebook about analysis of bird census data (Book SN)
 
 - [**Trend analysis (Mann-Kendall analysis)**](trend-analysis.html) could be found. Graphic outputs are stored at  `/output/mktrend`). 
 
-- Explore [**abundance**](abundance.html) trends by habitat**. Graphic outputs are stored at  `/output/mktrend`). 
+- Explore [**abundance**](abundance.html). Graphic outputs are stored at  `/output/mktrend`). 
+
+- [**Turnover analysis**](turnover.html). Graphic outputs are stored at  `/output/mktrend`). 
+
+- [**Composed plot**](composed_plot.html). Graphic outputs are stored at  `/output/mktrend`). 
+

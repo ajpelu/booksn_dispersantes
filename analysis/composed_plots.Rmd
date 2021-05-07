@@ -1,0 +1,102 @@
+---
+title: "composed_plots"
+author: "Antonio J Perez-Luque"
+date: "2021-05-06"
+output: workflowr::wflow_html
+editor_options:
+  chunk_output_type: console
+---
+
+## Introduction
+
+
+```{r, set-global-options}
+knitr::opts_chunk$set(echo = TRUE, 
+                      warning = FALSE, 
+                      message = FALSE)
+```
+
+
+```{r load-pkgs}
+library("tidyverse")
+library("here")
+```
+
+- Read data of alpha diversity 
+
+```{r read-data}
+diversity_index <- read_csv(here::here("output/diversity/alfa_diversity.csv")) 
+tbi <- read_csv(here::here("output/betadiversity/tbi.csv"))
+```
+
+
+```{r, fig.width=3}
+shannon <- diversity_index %>% 
+  filter(year %in% c(1981:1985, 2008:2009, 2017:2018)) %>% 
+  mutate(yearF = case_when(
+    year %in% c(1981:1985) ~ as.character(1983), 
+    year %in% c(2008:2009) ~ as.character(2009),
+    year %in% c(2017:2018) ~ as.character(2018)
+  )) %>% 
+  group_by(yearF, habitat) %>% 
+  summarise(mean = mean(shannon, na.rm=TRUE), 
+            sd = sd(shannon, na.rm=TRUE),
+            se = sd/sqrt(length(shannon))) %>% 
+  mutate(variable = "shannon", type = "alpha")
+
+
+tbi_wide <- tbi %>% 
+  rename(yearF = pair) %>% 
+  dplyr::select(-Change, -year_t0) %>% 
+  pivot_longer(losses:D, values_to = "mean", names_to = "variable") %>% 
+  mutate(se = NA, type = "beta")
+
+
+df <- bind_rows(tbi_wide, (shannon %>% dplyr::select(-sd)))
+
+cols <- c("D" = "#8d96a3", "losses" = "#edae49")
+
+plot_alpha <- tbi_wide %>% 
+  filter(variable != "gains") %>% 
+  ggplot(aes(x=yearF, y=mean, fill=variable)) + 
+  geom_bar(stat="identity", width = .4, position = "dodge2") + 
+  geom_errorbar(aes(ymax = mean + se, ymin= mean - se), 
+                width = .2, size = .3) +
+  facet_wrap(vars(habitat), nrow=3) + 
+  scale_fill_manual(values = cols) + 
+  theme_bw() +
+  theme(
+    panel.grid.minor = element_blank(),
+    strip.background = element_blank()
+  ) +
+  xlab("") +
+  ylab(expression(paste("Dissimilarity in ", beta, "-diversisty")))
+
+plot_alpha
+```
+
+```{r, fig.width=3}
+
+shannon %>% 
+  ggplot(aes(x=yearF, y=mean, group=1)) + 
+  geom_point() +
+  geom_line() + 
+  # geom_bar(stat="identity", fill="black") + 
+  geom_errorbar(aes(ymax = mean + se, ymin= mean - se), 
+                width = .2, size = .3) + 
+  facet_wrap(~habitat, ncol = 1) + 
+  theme_bw() +
+  theme(
+    panel.grid.minor = element_blank(),
+    strip.background = element_blank()
+  ) + 
+  ylab("Shannon Index (H')") + xlab("")
+
+
+cols <- c("Shannon Index (H')" = "#8d96a3", "Losses" = "#edae49", "Temporal Beta-Diversity" ="steelblue")
+
+# "#C4961A"
+
+
+```
+
