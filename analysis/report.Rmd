@@ -1,0 +1,483 @@
+---
+title: "report"
+author: "Antonio J Perez-Luque"
+date: "2021-05-10"
+output: workflowr::wflow_html
+editor_options:
+  chunk_output_type: console
+---
+
+```{r, set-global-options, echo=FALSE}
+knitr::opts_chunk$set(echo = TRUE, 
+                      warning = FALSE, 
+                      message = FALSE)
+```
+
+```{r, load-pkgs, echo=FALSE}
+library("tidyverse")
+library("here")
+library("DT")
+library("patchwork")
+```
+
+
+```{r, echo=FALSE}
+diversity_index <- read_csv(here::here("output/diversity/alfa_diversity.csv"))
+richness <- read_csv(here::here("output/diversity/richness.csv")) 
+passerie_turnover_compare <- read_csv(here::here("output/turnover/passerine_turnover_compare.csv")) 
+
+bd_baselga <- read_csv(here::here("output/betadiversity/betapart.csv"))
+tbi <- read_csv(here::here("output/betadiversity/tbi.csv"))
+passerine_abtotal <- read_csv(here::here("output/abundance_time/passerine_abtotal.csv"))
+passerine_abtotal_compare <- read_csv(here::here("output/abundance_time/passerine_abtotal_compare.csv"))
+mk.all <- read_csv(here::here("output/mktrend/mktrend_especies.csv"))
+
+passerine.abindex <- read_csv(here::here("data/passerine_ab.csv"))
+
+```
+
+# Diversidad 
+
+## Diversidad alfa 
+
+Se ha analizado la evolución temporal de la diversidad alfa para los tres sitios (cumbres, enebral y robledal). Las altas cumbres muestran un descenso en cuanto al índice de Shannon desde los años 1980 hasta la actualiadad, mientras que para los otros dos hábitats se muestran valores estables de diversidad. 
+
+Una comparación de tres momentos temporales, esto es, 1980's, 2009 (media 2008-2009) y 2018 (media 2017-2018) muestra un patrón similar, aunque parece una ligera tendencia a aumetar la diversidad en el enebral y un descenso en el robledal. 
+
+
+```{r, echo=FALSE, fig.width=3}
+shannon <- diversity_index %>% 
+  filter(year %in% c(1981:1985, 2008:2009, 2017:2018)) %>% 
+  mutate(yearF = case_when(
+    year %in% c(1981:1985) ~ as.character(1983), 
+    year %in% c(2008:2009) ~ as.character(2009),
+    year %in% c(2017:2018) ~ as.character(2018)
+  )) %>% 
+  group_by(yearF, habitat) %>% 
+  summarise(mean = mean(shannon, na.rm=TRUE), 
+            sd = sd(shannon, na.rm=TRUE),
+            se = sd/sqrt(length(shannon)))
+
+plot.shannon <- shannon %>% 
+  ggplot(aes(x=yearF, y=mean, group=1)) + 
+  geom_point() +
+  geom_line() + 
+  # geom_bar(stat="identity", fill="black") + 
+  geom_errorbar(aes(ymax = mean + se, ymin= mean - se), 
+                width = .2, size = .3) + 
+  facet_wrap(~habitat, ncol = 1) + 
+  theme_bw() +
+  theme(
+    panel.grid.minor = element_blank(),
+    strip.background = element_blank()
+  ) + 
+  ylab("Shannon Index (H')") + xlab("")
+plot.shannon
+```
+
+
+```{r, echo=FALSE, fig.cap="Shannon index"}
+datatable(shannon,
+          filter = list( position = 'top', clear = TRUE )) %>% 
+  DT::formatRound(columns = c("mean", "sd", "se"), digits=3)
+```
+
+## Riqueza
+Respecto a la riqueza, el análisis temporal (año a año) no revela tendencias claras. La comparativa entre los tres momentos temporales revela un descenso en la riqueza para las altas cumbres, y patrón mas estable en robledal y en enebral, aunque para robledal se observó un descenso en la riqueza entre 1980's y 2009. 
+
+```{r, fig.width=3, echo=FALSE}
+richness_compare <- richness %>% 
+  filter(year %in% c(1981:1985, 2008:2009, 2017:2018)) %>% 
+  mutate(yearF = case_when(
+    year %in% c(1981:1985) ~ as.character(1983), 
+    year %in% c(2008:2009) ~ as.character(2009),
+    year %in% c(2017:2018) ~ as.character(2018)
+  )) %>% 
+  group_by(yearF, habitat) %>% 
+  summarise(mean = mean(richness, na.rm=TRUE), 
+            sd = sd(richness, na.rm=TRUE),
+            se = sd/sqrt(length(richness))) 
+
+
+plot.richness <- richness_compare %>%   
+  ggplot(aes(x=yearF, y=mean, group=1)) + 
+  geom_point() +
+  geom_line() + 
+  # geom_bar(stat="identity", fill="black") + 
+  geom_errorbar(aes(ymax = mean + se, ymin= mean - se), 
+                width = .2, size = .3) + 
+  facet_wrap(~habitat, ncol = 1, scales = "free_y") + 
+  theme_bw() +
+  theme(
+    panel.grid.minor = element_blank(),
+    strip.background = element_blank()
+  ) + ylab("Richness (species number)") + xlab("") 
+plot.richness
+
+```
+
+
+```{r, echo=FALSE, fig.cap="Richness value"}
+datatable(richness_compare,
+          filter = list( position = 'top', clear = TRUE )) %>% 
+  DT::formatRound(columns = c("sd", "se"), digits=2)
+```
+
+## Turnover 
+
+El análisis del turnover para cada uno de los hábitats a lo largo del tiempo muestra valores muy dispares, observandose la mayor variación en el turnover para el hábitat cumbres. La comparación entre los tres momentos temporales revela: 
+
+- Cumbres:
+
+  - Los valores de turnover son mayores entre 1980-2009 (57 %), contribuyendo en mayor medida las pérdidas de especies. 
+  - Entre 1980's y 2018 la tasa turonver se sitúa en el 50 % siendo todo debido la pérdida de especies. 
+    
+- Enebral: 
+  
+  - Altos valores de turonver entre 1980-2008 (66 %), con igual contribución de pérdidas y entradas de especies. 
+  - Valores del 52 % entre 1980's y 2019, con contribuciones similares de las pérdidas y las entradas 
+  
+- Robledal:  
+
+  - Altos valores de turonver entre 1980-2008 (55.1 %) y entre 1980-2018. Las pérdidas de especies contribuyeron mas a la turnover entre 1980-2008, y por el contrario se produjo una mayor contribución a la turnover entre 1980-2018 de la entrada de especies. 
+
+```{r, echo=FALSE, fig.width=3.5}
+colturnover <- c("total"="#B3B3B3", "appearance" = "#8DA0CB", 
+                "disappearance"= "#E5C494")
+
+plot.turnover <- passerie_turnover_compare %>% 
+  ggplot(aes(x=pair, y=value, 
+             fill=turnover_metric)) + 
+  geom_bar(stat="identity", position = "dodge2") + 
+  facet_wrap(~habitat, nrow=3) + 
+  theme_bw() + 
+  theme(legend.position="bottom", 
+        legend.title = element_blank(),
+    panel.grid.minor = element_blank(),
+    strip.background = element_blank()
+  ) +
+    scale_fill_manual(values = colturnover) +
+  xlab("") + ylab("Turnovers (%)")
+plot.turnover
+```
+
+
+```{r, echo=FALSE}
+datatable(passerie_turnover_compare,
+          filter = list( position = 'top', clear = TRUE )) %>% 
+  DT::formatRound(columns = "value", digits=3)
+```
+
+
+## Diversidad Beta 
+
+Se ha calculado el **TBI** (temporal beta diversity index, *sensu* Legrende 2019), para cada hábitat en el momento inicial (1980's y los otros momentos). Los resultados (escalados de 0 a 1), muestran que la mayor disimilaridad en la Beta-diversidad (BD) se observa para los robledales tanto entre 1980 y 2008, como tentre 1980's-2018. 
+
+En los tres hábitats, la mayor contribución de las diferencias en la BD entre momentos temporales se debe a la pérdida de especies (indicada como triángulos en las barras). 
+
+```{r, echo=FALSE, fig.width=4.5, fig.height=3}
+cols <- c("cumbres" = "#8d96a3", "enebral" = "#66a182", "robledal" = "#edae49")
+tbi %>% 
+  ggplot(aes(x=pair, fill=habitat, colour=habitat)) +
+  geom_bar(aes(y=D), stat="identity", position = position_dodge2(width = .9)) + 
+  ylab(expression(paste("Dissimilarity in ", beta, "-diversisty"))) +
+  xlab("") + 
+  theme_bw() +
+  scale_color_manual(values = cols) + 
+  scale_fill_manual(values = cols) + 
+  geom_point(aes(x=pair, y=losses), colour="black", shape=25, 
+             position = position_dodge2(width = .9))
+```
+
+
+```{r, echo=FALSE}
+DT::datatable(tbi, filter = list( position = 'top', clear = TRUE )) %>% DT::formatRound(columns = c("losses", "gains", "D"), digits=3)
+```
+
+
+Por otro lado, si evaluadmos la BD para cada hábitat entre cada uno de los años (sensu Baselga 2017), observamos un valor medio de dissimilarida de:
+
+- robledal: 0.798
+- enebral= 0.778
+- cumbres = 0.740 
+
+Esta aproximación, sin conocerla muy a fondo, le veo la limitación para nuestro caso de que al existir mas años muestreados en la actualidad, puede que estemos sesgando los datos pasados. 
+
+```{r, echo=FALSE}
+datatable(bd_baselga[,-1],
+          filter = list( position = 'top', clear = TRUE )) %>% 
+  DT::formatRound(columns = "value", digits=3)
+```
+
+
+# Abundancia 
+Se ha explorado la evolución temporal de la abundancia total (n ind / 10 ha) para cada uno de los hábitats y se ha observado: 
+
+ - Descenso progesivo en la abundancia en el enebral
+ - Descenso abrupto de la abundancia en el robledal entre 1980's y 2009, aunque seguidamente el patrón se vuelve mas estable. 
+ - Un patrón estable, e incluso de ligero aumento para la abundancias totales del enebral. 
+
+
+```{r, echo=FALSE}
+passerine_abtotal %>% 
+  ggplot(aes(x=as.factor(year), y=abtotal, group=habitat)) + 
+  geom_errorbar(aes(ymin = abtotal - se, 
+                    ymax = abtotal + se),
+                width = 0.2) +
+  geom_point() + 
+  geom_path(aes(group=habitat)) + 
+  facet_wrap(~habitat, nrow = 3) + 
+  ylab("Total abundance (ind / 10ha)") + xlab("") + 
+  theme_bw() + 
+  theme(
+    panel.grid.minor = element_blank(),
+    strip.background = element_blank()
+  )
+```
+
+
+Si exploramos la abundacia en los tres momentos temporales obtenemos un patrón similar: 
+
+```{r, echo=FALSE, fig.width=3}
+plot.abundance <- passerine_abtotal_compare %>% 
+  ggplot(aes(x=as.factor(yearF), y=abtotalavg)) + 
+  geom_bar(stat="identity", position = "dodge2", fill="gray") + 
+  geom_errorbar(aes(ymax = abtotalavg + sd, ymin= abtotalavg - sd), 
+                width = .2, size = .3, color="gray") + 
+  facet_wrap(~habitat, nrow=3) + 
+  theme_bw() + 
+  theme(
+    panel.grid = element_blank(),
+    strip.background = element_blank()
+  ) +
+  ylab("abundance (ind / 10ha)") + xlab("") 
+plot.abundance
+```
+
+
+```{r, echo=FALSE, fig.cap="Abundance total (nind / 10ha)"}
+datatable(passerine_abtotal_compare,
+          filter = list( position = 'top', clear = TRUE )) %>% 
+  DT::formatRound(columns = c("abtotalavg", "sd", "se"), digits=3)
+```
+
+## Tendencias temporales 
+
+Hemos analizado la tendencia temporal ($tau$) para cada una de las especies en cada uno de los hábitats mediante análisis no paramétricos de Mann-Kendall. Los resultados muestran: 
+
+- Cumbres: no se observan tendencias significativas para las 4 especies analizadas en este hábitat. Los valores de las tendencias son muy bajos, siendo *Carduelis cannabina* la especie que presenta una tendencia más acusada ($tau =-0.333$) 
+
+- Enebral: destaca el hecho de que de las 9 especies analizadas, 7 presentan tendencias negativas, destacando *Prunella collaris* ($tau =-0.598$) y *Oenanthe oenanthe* ($tau =-0.901$), siendo esta última tendencia significativa en el periodo estudiado. 
+
+- Robledal: se observan tendencias en los dos sentidos entre las 20 especies analizadas. Destaca el significativo descenso de *Garrulus glandarius* ($tau =-0.535$), así como el aumento de *Phoenicurus ochruros* ($tau =0.738$). 
+
+
+```{r}
+mk.all %>% 
+  mutate(sig = ifelse(pvalue < 0.05, "*", "")) %>% 
+  ggplot(aes(x=especie, y=tau)) + 
+  geom_bar(stat="identity", fill="gray") +
+  facet_wrap(~habitat) + coord_flip() + 
+  theme_bw() + 
+  geom_hline(yintercept = 0) + 
+  geom_text(aes(label=sig), hjust=1.5, size=4) + 
+  theme(
+    panel.grid.minor = element_blank(),
+    strip.background = element_blank()
+  ) + 
+  xlab("Species") + ylab("Mann-Kendall trend (tau)")
+```
+
+
+```{r, echo=FALSE}
+DT::datatable(mk.all, filter = list( position = 'top', clear = TRUE ))
+```
+
+# Explorar evolución temporal de algunas especies 
+
+se han seleccinado algunas especies para mostrar su evolución temporal, si queréis otras podemos elegirlas ([aquí](trend-analysis.html) se muestran todas las que tenemos)
+
+
+## Enebral 
+se muestran algunas especies con tendencias regresivas, y otras con tentencias mas o menos estables.
+
+```{r, echo=FALSE}
+bird_theme <- 
+  ggplot2::theme_bw() + 
+  ggplot2::theme(
+    panel.grid.minor = element_blank(),
+    strip.background = element_blank()
+  )
+
+plotabindex <- function(df, myhabitat, selected_especies){
+  df %>% 
+  filter(habitat == myhabitat) %>% 
+  filter(stringr::str_detect(especie, selected_especies)) %>%
+  ggplot(aes(x=as.factor(year), y=ab.index)) + 
+  geom_point(color = "red", shape=15) + 
+  geom_hline(yintercept = 1, colour="red", linetype = "dashed") + 
+  facet_wrap(~especie) + 
+  geom_line(aes(x=as.factor(year), y=ab.index, group=1), colour = "red") +
+  ylab("abundance index (ind / 10ha)") + xlab("") + 
+  bird_theme + 
+  ggtitle(myhabitat)
+} 
+
+
+plotabundances <- function(df, myhabitat, selected_especies){
+  df %>% 
+  filter(habitat == myhabitat) %>% 
+  filter(stringr::str_detect(especie, selected_especies)) %>%
+  ggplot(aes(x=as.factor(year), y=ab_avg)) + 
+  geom_errorbar(aes(ymin = ab_avg - se, 
+                    ymax = ab_avg + se),
+                width = 0.2) +
+  geom_point() +
+  geom_point(aes(x=as.factor(year), y=ab.index), color = "red", shape=15) + 
+  geom_hline(yintercept = 1, colour="red", linetype = "dashed") + 
+  facet_wrap(~especie) + 
+  geom_line(aes(x=as.factor(year), y=ab.index, group=1), colour = "red") +
+  ylab("abundance (ind / 10ha)") + xlab("") + 
+  bird_theme + 
+  ggtitle(myhabitat)
+} 
+```
+
+- Gráfico de abundance index (es decir, considerando 1 el valor de abundancia inicial) (esta aproximación es similar a la que utiliza TRIM para visualizar los datos)
+
+```{r, echo=FALSE}
+sp_enebral <- "cannabina|Embe|Oena|Phoeni"
+
+plotabindex(df = passerine.abindex, 
+           myhabitat = "enebral",
+           selected_especies = sp_enebral) 
+```
+
+En este otro gráfico combinamos datos de abundancia reales (puntos negros) con datos de abundance index (tal y como os he comentado mas arriba). 
+
+```{r}
+plotabundances(df = passerine.abindex, 
+           myhabitat = "enebral",
+           selected_especies = sp_enebral)
+```
+
+
+## Robledal 
+
+- Gráfico de abundance index 
+
+```{r, echo=FALSE}
+sp_robledal <- "Cyanis|Fringi|Garrulus|Phoeni|Sitta|Troglo|viscivorus"
+plotabindex(df = passerine.abindex, 
+           myhabitat = "robledal",
+           selected_especies = sp_robledal) 
+```
+
+
+```{r, echo=FALSE}
+plotabundances(df = passerine.abindex, 
+           myhabitat = "robledal",
+           selected_especies = sp_robledal)
+```
+
+
+# Gráfico resumen 
+
+```{r, echo=FALSE}
+tbi_wide <- tbi %>% 
+  rename(yearF = pair) %>% 
+  dplyr::select(-Change, -year_t0) %>% 
+  pivot_longer(losses:D, values_to = "mean", names_to = "variable") %>% 
+  mutate(se = NA, type = "beta")
+
+cols <- c("D" = "#8d96a3", "losses" = "#edae49")
+
+plot.tbi <- tbi_wide %>% 
+  filter(variable != "gains") %>% 
+  ggplot(aes(x=yearF, y=mean, fill=variable)) + 
+  geom_bar(stat="identity", width = .4, position = "dodge2") + 
+  geom_errorbar(aes(ymax = mean + se, ymin= mean - se), 
+                width = .2, size = .3) +
+  facet_wrap(vars(habitat), nrow=3) + 
+  scale_fill_manual(values = cols) + 
+  theme_bw() +
+  theme(
+    panel.grid.minor = element_blank(),
+    strip.background = element_blank(), 
+    legend.position = "bottom"
+  ) +
+  xlab("") +
+  ylab(expression(paste("Dissimilarity in ", beta, "-diversisty")))
+```
+
+```{r, echo=FALSE}
+# p <- plot.shannon + plot.richness + plot.abundance 
+# p1 <- plot.tbi + plot.turnover 
+# q <- plot.tbi + plot.turnover + plot.shannon + plot.richness + plot.abundance
+compose_plot <- plot.tbi + plot.turnover + plot.shannon + plot.richness + plot.abundance + plot_layout(ncol= 5, widths = c(1.2,2,.8,.8,.8))
+```
+
+```{r, echo=FALSE, message=FALSE, warning=FALSE}
+ggsave(here::here("output/compose_plot.pdf"),
+       width =27, height = 21, units = "cm")
+compose_plot
+dev.off()
+```
+
+## Migración altitudinal
+- Siguiendo la idea del trabajo de Ardeola, he replicado los el análisis para *Phoenicurus ochruros* y *Carduelis cannabina* usando los siguientes intervalos de datos: 
+    
+  - 1983 (mean 1981-1985)
+  - 2010 (mean 2008:2014)
+  - 2018 (mean 2015:2018)
+
+
+```{r, echo=FALSE}
+passerine_mig <- passerine.abindex %>% 
+  filter(sp %in% c("Car.can", "Pho.och")) %>% 
+  # filter(year %in% c(1981:1985, 2008:2012, 2015:2018)) %>% 
+  mutate(yearF = case_when(
+    year %in% c(1981:1985) ~ as.character(1983), 
+    year %in% c(2008:2014) ~ as.character(2010),
+    year %in% c(2015:2018) ~ as.character(2018)
+  )) %>% 
+  group_by(yearF, habitat, sp) %>% 
+  summarise(ab = mean(ab_avg, na.rm=TRUE), 
+            sd = sd(ab_avg, na.rm=TRUE),
+            se = sd/sqrt(length(ab_avg))) 
+
+# Phoenicurus ochruros
+# Carduelis cannabina
+```
+
+
+
+```{r, fig.width=4.5, echo=FALSE}
+cols <- c("1983" = "#8d96a3", "2010" = "#66a182", "2018" = "#edae49")
+
+passerine_mig %>% 
+  as_tibble() %>% 
+  complete(yearF, habitat, sp) %>% 
+  ggplot(aes(x=habitat, y=ab, group=yearF, fill=yearF, col=yearF)) + 
+  geom_col(position = position_dodge2(preserve = "single")) + 
+  geom_errorbar(aes(ymin=ab - se, ymax = ab + se),
+                position= position_dodge2(preserve = "single")) +
+  facet_wrap(vars(sp), ncol=1, scales="free_y",
+             labeller = labeller(
+                                 sp = 
+                                   c("Car.can" = "Carduelis cannabina",
+                                     "Pho.och" = "Phoenicurus ochruros"))) +
+  scale_x_discrete(limits=c("robledal","enebral","cumbres")) + 
+  scale_fill_manual(values=cols) + 
+  scale_colour_manual(values=cols) + 
+  theme_bw() + 
+  xlab("") + ylab("Abundance (ind / 10ha)") + 
+  theme(
+    strip.background = element_blank(), 
+    panel.grid.minor = element_blank(), 
+    legend.title = element_blank()
+  )
+
+```
+
+
