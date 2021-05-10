@@ -34,15 +34,15 @@
 #' @importFrom dplyr select
 #'
 
-computeTBI <- function(data, vector.years, y0, ...) {
+computeTBI <- function(data, vector.years, y0=NULL, ...) {
 
   tbi.out <- data.frame()
 
   for (i in 1:length(vector.years)) {
 
     if (!exists("y0")) {
-      y0 <- years[i]}
-    y1 <- years[i + 1]
+      y0 <- vector.years[i]}
+     y1 <- vector.years[i + 1]
     habitat <- data %>% dplyr::select(habitat) %>%
       pull(habitat) %>%
       unique()
