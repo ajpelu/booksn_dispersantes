@@ -246,7 +246,7 @@ write_csv(birds, here::here("data/birds.csv"))
 - Filter out species. After consultation of specialist we'll remove the following species: 
 
 ```{r, remove-sp}
-remove_sp<- c("Acrocephalus dumetorum", "Alectoris rufa", "Columba palumbus", "Corvus corax", "Ficedula albicollis", "Himantopus himantopus", "Ixobrychus sturmii", "Luscinia svecica", "Monticola solitarius","Oceanodroma leucorhoa", "Prunus avium", "Puffinus yelkouan", "Pyrrhocorax pyrrhocorax")
+remove_sp<- c("Acrocephalus dumetorum", "Alectoris rufa", "Columba palumbus", "Corvus corax", "Ficedula albicollis", "Himantopus himantopus", "Ixobrychus sturmii", "Luscinia svecica", "Monticola solitarius","Oceanodroma leucorhoa", "Prunus avium", "Puffinus yelkouan", "Pyrrhocorax pyrrhocorax", "Ptyonoprogne rupestris", "Delichon urbicum")
 
 passerine  <- birds %>% 
   filter(!especie %in% remove_sp) %>% 
