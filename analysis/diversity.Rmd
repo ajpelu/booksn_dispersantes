@@ -27,6 +27,7 @@ library("vegan")
 passerine <- read_csv(here::here("data/passerine.csv")) 
 passerine_abbreviations <- read_csv(here::here("data/passerine_abbrev.csv")) 
 
+
 passerine.ab <- passerine %>% 
   rename(sp = sp.abb) %>% 
   dplyr::select(-especie) %>% 
