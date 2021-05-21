@@ -390,7 +390,7 @@ div.tocify {
 <div class="tab-content">
 <div id="summary" class="tab-pane fade in active">
 <p>
-<strong>Last updated:</strong> 2021-05-20
+<strong>Last updated:</strong> 2021-05-21
 </p>
 <p>
 <strong>Checks:</strong> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> 7 <span class="glyphicon glyphicon-exclamation-sign text-danger" aria-hidden="true"></span> 0
@@ -481,16 +481,16 @@ This reproducible <a href="http://rmarkdown.rstudio.com">R Markdown</a> analysis
 <div class="panel panel-default">
 <div class="panel-heading">
 <p class="panel-title">
-<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomajpelubooksndispersantestree556d988c94682be2e3f4532766c30599fa2e7a15targetblank556d988a"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Repository version:</strong> <a href="https://github.com/ajpelu/booksn_dispersantes/tree/556d988c94682be2e3f4532766c30599fa2e7a15" target="_blank">556d988</a> </a>
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomajpelubooksndispersantestree599c816654eb49eeeceb8f275ca4354ddf1e7576targetblank599c816a"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Repository version:</strong> <a href="https://github.com/ajpelu/booksn_dispersantes/tree/599c816654eb49eeeceb8f275ca4354ddf1e7576" target="_blank">599c816</a> </a>
 </p>
 </div>
-<div id="strongRepositoryversionstrongahrefhttpsgithubcomajpelubooksndispersantestree556d988c94682be2e3f4532766c30599fa2e7a15targetblank556d988a" class="panel-collapse collapse">
+<div id="strongRepositoryversionstrongahrefhttpsgithubcomajpelubooksndispersantestree599c816654eb49eeeceb8f275ca4354ddf1e7576targetblank599c816a" class="panel-collapse collapse">
 <div class="panel-body">
 <p>
 Great! You are using Git for version control. Tracking code development and connecting the code version to the results is critical for reproducibility.
 </p>
 <p>
-The results in this page were generated with repository version <a href="https://github.com/ajpelu/booksn_dispersantes/tree/556d988c94682be2e3f4532766c30599fa2e7a15" target="_blank">556d988</a>. See the <em>Past versions</em> tab to see a history of the changes made to the R Markdown and HTML files.
+The results in this page were generated with repository version <a href="https://github.com/ajpelu/booksn_dispersantes/tree/599c816654eb49eeeceb8f275ca4354ddf1e7576" target="_blank">599c816</a>. See the <em>Past versions</em> tab to see a history of the changes made to the R Markdown and HTML files.
 </p>
 <p>
 Note that you need to be careful to ensure that all relevant files for the analysis have been committed to Git prior to generating the results (you can use <code>wflow_publish</code> or <code>wflow_git_commit</code>). workflowr only checks the R Markdown file, but you know if there are other scripts or data files that it depends on. Below is the status of the Git repository when the results were generated:
@@ -502,15 +502,9 @@ Ignored files:
     Ignored:    data/.DS_Store
 
 Unstaged changes:
+    Modified:   analysis/abundance.Rmd
     Modified:   data/passerine_ab.csv
-    Modified:   output/betadiversity/betapart.csv
-    Modified:   output/betadiversity/plot_betadiversity.pdf
-    Modified:   output/betadiversity/tbi.csv
     Modified:   output/compose_plot.pdf
-    Modified:   output/diversity/alfa_diversity.csv
-    Modified:   output/diversity/diversity_habitat.pdf
-    Modified:   output/diversity/richness.csv
-    Modified:   output/mktrend/plot_mktrend.pdf
 
 </code></pre>
 <p>
@@ -549,6 +543,40 @@ Message
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/ajpelu/booksn_dispersantes/blob/599c816654eb49eeeceb8f275ca4354ddf1e7576/analysis/trend-analysis.Rmd" target="_blank">599c816</a>
+</td>
+<td>
+Antonio J Perez-Luque
+</td>
+<td>
+2021-05-21
+</td>
+<td>
+change plots for publication
+</td>
+</tr>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/ajpelu/booksn_dispersantes/0bb400c1ac22fa5522a0d4f44849688d1b090daf/docs/trend-analysis.html" target="_blank">0bb400c</a>
+</td>
+<td>
+Antonio J Perez-Luque
+</td>
+<td>
+2021-05-20
+</td>
+<td>
+Build site.
+</td>
+</tr>
 <tr>
 <td>
 html
@@ -677,7 +705,42 @@ write_csv(passerine.abindex, here::here(&quot;data/passerine_ab.csv&quot;))</cod
     strip.background = element_blank()
   )</code></pre>
 <pre class="r"><code># Generate functions to plot abundances and abundance index 
-plotabundances &lt;- function(df, myhabitat, selected_especies){
+plotabundances &lt;- function(df, myhabitat, selected_especies, colorea, nrows, escalas,...){
+  if(missing(colorea)) { colorea = &quot;blue&quot;} 
+  if(missing(escalas)) { escalas = &quot;fixed&quot;}
+  df %&gt;% 
+  filter(habitat == myhabitat) %&gt;% 
+  filter(stringr::str_detect(especie, selected_especies)) %&gt;%
+  ggplot(aes(x=as.factor(year), y=ab_avg)) + 
+  geom_errorbar(aes(ymin = ab_avg - se, 
+                    ymax = ab_avg + se), colour = colorea, 
+                width = 0.2) +
+  geom_point(colour = colorea) +
+  facet_wrap(~especie, nrow = nrows, scales = escalas) + 
+  geom_line(aes(x=as.factor(year), y=ab_avg, group=1), colour = colorea, na.rm = TRUE) +
+  ylab(&quot;abundance (ind / 10ha)&quot;) + xlab(&quot;&quot;) + 
+  bird_theme + 
+  ggtitle(myhabitat) +
+  theme(panel.grid = element_blank())
+} 
+
+plotabindex &lt;- function(df, myhabitat, selected_especies){
+  df %&gt;% 
+  filter(habitat == myhabitat) %&gt;% 
+  filter(stringr::str_detect(especie, selected_especies)) %&gt;%
+  ggplot(aes(x=as.factor(year), y=ab.index)) + 
+  geom_point(color = &quot;red&quot;, shape=15) + 
+  geom_hline(yintercept = 1, colour=&quot;red&quot;, linetype = &quot;dashed&quot;) + 
+  facet_wrap(~especie) + 
+  geom_line(aes(x=as.factor(year), y=ab.index, group=1), colour = &quot;red&quot;) +
+  ylab(&quot;abundance (ind / 10ha)&quot;) + xlab(&quot;&quot;) + 
+  bird_theme + 
+  ggtitle(myhabitat)
+} 
+
+
+
+plotabmixed &lt;- function(df, myhabitat, selected_especies){
   df %&gt;% 
   filter(habitat == myhabitat) %&gt;% 
   filter(stringr::str_detect(especie, selected_especies)) %&gt;%
@@ -693,20 +756,6 @@ plotabundances &lt;- function(df, myhabitat, selected_especies){
   ylab(&quot;abundance (ind / 10ha)&quot;) + xlab(&quot;&quot;) + 
   bird_theme + 
   ggtitle(myhabitat)
-} 
-
-plotabindex &lt;- function(df, myhabitat, selected_especies){
-  df %&gt;% 
-  filter(habitat == myhabitat) %&gt;% 
-  filter(stringr::str_detect(especie, selected_especies)) %&gt;%
-  ggplot(aes(x=as.factor(year), y=ab.index)) + 
-  geom_point(color = &quot;red&quot;, shape=15) + 
-  geom_hline(yintercept = 1, colour=&quot;red&quot;, linetype = &quot;dashed&quot;) + 
-  facet_wrap(~especie) + 
-  geom_line(aes(x=as.factor(year), y=ab.index, group=1), colour = &quot;red&quot;) +
-  ylab(&quot;abundance (ind / 10ha)&quot;) + xlab(&quot;&quot;) + 
-  bird_theme + 
-  ggtitle(myhabitat)
 } </code></pre>
 <pre class="r"><code>sp_cumbres &lt;- &quot;Card|Oena|Phoeni|collaris&quot;
 sp_enebral &lt;- &quot;Alauda|Anthus|cannabina|Embe|Oena|Phoeni|collaris|conspici|Troglo&quot;
@@ -716,15 +765,15 @@ sp_robledal &lt;- &quot;Aeg|cannabina|Certhia|Cyanis|Erith|Fringi|Garrulus|Lullu
 # robledal Lopho</code></pre>
 <pre class="r"><code>plotabundances(df = passerine.abindex, 
            myhabitat = &quot;cumbres&quot;,
-           selected_especies = sp_cumbres)
+           selected_especies = sp_cumbres, nrows = 2)
 
 plotabundances(df = passerine.abindex, 
            myhabitat = &quot;enebral&quot;,
-           selected_especies = sp_enebral)
+           selected_especies = sp_enebral, nrows = 3)
 
 plotabundances(df = passerine.abindex, 
            myhabitat = &quot;robledal&quot;,
-           selected_especies = sp_robledal)</code></pre>
+           selected_especies = sp_robledal, nrows = 4)</code></pre>
 <pre class="r"><code>plotabindex(df = passerine.abindex, 
            myhabitat = &quot;cumbres&quot;,
            selected_especies = sp_cumbres)</code></pre>
@@ -795,47 +844,6 @@ Date
 <tr>
 <td>
 <a href="https://github.com/ajpelu/booksn_dispersantes/blob/725547ca31b207a2bc6ec623cdb1327a1c414efc/docs/figure/trend-analysis.Rmd/unnamed-chunk-6-2.png" target="_blank">725547c</a>
-</td>
-<td>
-Antonio J Perez-Luque
-</td>
-<td>
-2021-05-05
-</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
-<pre class="r"><code>plotabindex(df = passerine.abindex, 
-           myhabitat = &quot;robledal&quot;,
-           selected_especies = sp_robledal)</code></pre>
-<p><img src="figure/trend-analysis.Rmd/unnamed-chunk-6-3.png" width="672" style="display: block; margin: auto;" /></p>
-<p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-unnamed-chunk-6-3">
-Past versions of unnamed-chunk-6-3.png
-</button>
-</p>
-<div id="fig-unnamed-chunk-6-3" class="collapse">
-<div class="table-responsive">
-<table class="table table-condensed table-hover">
-<thead>
-<tr>
-<th>
-Version
-</th>
-<th>
-Author
-</th>
-<th>
-Date
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>
-<a href="https://github.com/ajpelu/booksn_dispersantes/blob/725547ca31b207a2bc6ec623cdb1327a1c414efc/docs/figure/trend-analysis.Rmd/unnamed-chunk-6-3.png" target="_blank">725547c</a>
 </td>
 <td>
 Antonio J Perez-Luque
@@ -962,6 +970,41 @@ Antonio J Perez-Luque
 </div>
 </div>
 <pre class="r"><code>dev.off()</code></pre>
+<pre><code>null device 
+          1 </code></pre>
+</div>
+<div id="genrate-plots-by-habitats" class="section level2">
+<h2>Genrate plots by habitats</h2>
+<pre class="r"><code>sp_cumbres &lt;- &quot;Card|Oena|Phoeni|collaris&quot;
+sp_enebral2 &lt;- &quot;Alauda|Anthus|cannabina|Embe|Oena|Phoeni&quot;
+sp_robledal2 &lt;- &quot;Aeg|Certhia|Cyanis|Erith|Fringi|Garrulus|Parus|Peripares|bonelli|Regulus|Sitta|atricapilla|cantillans|merula|visci|Troglo&quot;</code></pre>
+<pre class="r"><code>plot_cumbres &lt;- plotabundances(df = passerine.abindex, 
+           myhabitat = &quot;cumbres&quot;,
+           selected_especies = sp_cumbres, nrows = 2) +
+  ggplot2::theme(
+    axis.text.x = element_text(size=6)
+  )
+ 
+plot_enebral &lt;- plotabundances(df = passerine.abindex, 
+           myhabitat = &quot;enebral&quot;,
+           selected_especies = sp_enebral2, nrows = 2) +
+    ggplot2::theme(
+    axis.text.x = element_text(size=5)
+  )
+ 
+
+plot_robledal &lt;- plotabundances(df = passerine.abindex, 
+           myhabitat = &quot;robledal&quot;,
+           selected_especies = sp_robledal2, nrows = 3) +
+    ggplot2::theme(
+    axis.text.x = element_text(size=5))</code></pre>
+<p><img src="figure/trend-analysis.Rmd/unnamed-chunk-12-1.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>null device 
+          1 </code></pre>
+<p><img src="figure/trend-analysis.Rmd/unnamed-chunk-13-1.png" width="672" style="display: block; margin: auto;" /></p>
+<pre><code>null device 
+          1 </code></pre>
+<p><img src="figure/trend-analysis.Rmd/unnamed-chunk-14-1.png" width="672" style="display: block; margin: auto;" /></p>
 <pre><code>null device 
           1 </code></pre>
 <br>
