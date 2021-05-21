@@ -421,13 +421,11 @@ plot.tbi <- tbi_wide %>%
 # p <- plot.shannon + plot.richness + plot.abundance 
 # p1 <- plot.tbi + plot.turnover 
 # q <- plot.tbi + plot.turnover + plot.shannon + plot.richness + plot.abundance
-compose_plot <- plot.tbi + plot.turnover + plot.shannon + plot.richness + plot.abundance + plot_layout(ncol= 5, widths = c(1.2,2,.8,.8,.8))
+# compose_plot <- plot.tbi + plot.turnover + plot.shannon + plot.richness + plot.abundance + plot_layout(ncol= 5, widths = c(1.2,2,.8,.8,.8))
 
 compose_plot <- plot.tbi + plot.turnover + plot.abundance + plot_layout(ncol= 3, widths = c(1.2,1.8,1))
 
-
 ```
-
 
 
 ```{r, echo=FALSE, message=FALSE, warning=FALSE}
