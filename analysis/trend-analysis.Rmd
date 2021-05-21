@@ -97,7 +97,42 @@ bird_theme <-
 
 ```{r}
 # Generate functions to plot abundances and abundance index 
-plotabundances <- function(df, myhabitat, selected_especies){
+plotabundances <- function(df, myhabitat, selected_especies, colorea, nrows, escalas,...){
+  if(missing(colorea)) { colorea = "blue"} 
+  if(missing(escalas)) { escalas = "fixed"}
+  df %>% 
+  filter(habitat == myhabitat) %>% 
+  filter(stringr::str_detect(especie, selected_especies)) %>%
+  ggplot(aes(x=as.factor(year), y=ab_avg)) + 
+  geom_errorbar(aes(ymin = ab_avg - se, 
+                    ymax = ab_avg + se), colour = colorea, 
+                width = 0.2) +
+  geom_point(colour = colorea) +
+  facet_wrap(~especie, nrow = nrows, scales = escalas) + 
+  geom_line(aes(x=as.factor(year), y=ab_avg, group=1), colour = colorea, na.rm = TRUE) +
+  ylab("abundance (ind / 10ha)") + xlab("") + 
+  bird_theme + 
+  ggtitle(myhabitat) +
+  theme(panel.grid = element_blank())
+} 
+
+plotabindex <- function(df, myhabitat, selected_especies){
+  df %>% 
+  filter(habitat == myhabitat) %>% 
+  filter(stringr::str_detect(especie, selected_especies)) %>%
+  ggplot(aes(x=as.factor(year), y=ab.index)) + 
+  geom_point(color = "red", shape=15) + 
+  geom_hline(yintercept = 1, colour="red", linetype = "dashed") + 
+  facet_wrap(~especie) + 
+  geom_line(aes(x=as.factor(year), y=ab.index, group=1), colour = "red") +
+  ylab("abundance (ind / 10ha)") + xlab("") + 
+  bird_theme + 
+  ggtitle(myhabitat)
+} 
+
+
+
+plotabmixed <- function(df, myhabitat, selected_especies){
   df %>% 
   filter(habitat == myhabitat) %>% 
   filter(stringr::str_detect(especie, selected_especies)) %>%
@@ -115,19 +150,6 @@ plotabundances <- function(df, myhabitat, selected_especies){
   ggtitle(myhabitat)
 } 
 
-plotabindex <- function(df, myhabitat, selected_especies){
-  df %>% 
-  filter(habitat == myhabitat) %>% 
-  filter(stringr::str_detect(especie, selected_especies)) %>%
-  ggplot(aes(x=as.factor(year), y=ab.index)) + 
-  geom_point(color = "red", shape=15) + 
-  geom_hline(yintercept = 1, colour="red", linetype = "dashed") + 
-  facet_wrap(~especie) + 
-  geom_line(aes(x=as.factor(year), y=ab.index, group=1), colour = "red") +
-  ylab("abundance (ind / 10ha)") + xlab("") + 
-  bird_theme + 
-  ggtitle(myhabitat)
-} 
 ```
 
 ```{r}
@@ -143,15 +165,15 @@ sp_robledal <- "Aeg|cannabina|Certhia|Cyanis|Erith|Fringi|Garrulus|Lullula|Parus
 ```{r, eval=FALSE}
 plotabundances(df = passerine.abindex, 
            myhabitat = "cumbres",
-           selected_especies = sp_cumbres)
+           selected_especies = sp_cumbres, nrows = 2)
 
 plotabundances(df = passerine.abindex, 
            myhabitat = "enebral",
-           selected_especies = sp_enebral)
+           selected_especies = sp_enebral, nrows = 3)
 
 plotabundances(df = passerine.abindex, 
            myhabitat = "robledal",
-           selected_especies = sp_robledal)
+           selected_especies = sp_robledal, nrows = 4)
 ```
 
 
@@ -162,14 +184,7 @@ plotabindex(df = passerine.abindex,
 plotabindex(df = passerine.abindex, 
            myhabitat = "enebral",
            selected_especies = sp_enebral)
-plotabindex(df = passerine.abindex, 
-           myhabitat = "robledal",
-           selected_especies = sp_robledal)
-
 ```
-
-
-
 
 ## Compute Mann-Kendall trends 
 
@@ -257,6 +272,59 @@ dev.off()
 
 ```
 
+## Genrate plots by habitats 
+
+```{r}
+sp_cumbres <- "Card|Oena|Phoeni|collaris"
+sp_enebral2 <- "Alauda|Anthus|cannabina|Embe|Oena|Phoeni"
+sp_robledal2 <- "Aeg|Certhia|Cyanis|Erith|Fringi|Garrulus|Parus|Peripares|bonelli|Regulus|Sitta|atricapilla|cantillans|merula|visci|Troglo"
+```
+
+```{r}
+plot_cumbres <- plotabundances(df = passerine.abindex, 
+           myhabitat = "cumbres",
+           selected_especies = sp_cumbres, nrows = 2) +
+  ggplot2::theme(
+    axis.text.x = element_text(size=6)
+  )
+ 
+plot_enebral <- plotabundances(df = passerine.abindex, 
+           myhabitat = "enebral",
+           selected_especies = sp_enebral2, nrows = 2) +
+    ggplot2::theme(
+    axis.text.x = element_text(size=5)
+  )
+ 
+
+plot_robledal <- plotabundances(df = passerine.abindex, 
+           myhabitat = "robledal",
+           selected_especies = sp_robledal2, nrows = 3) +
+    ggplot2::theme(
+    axis.text.x = element_text(size=5))
+```
+
+
+```{r, echo=FALSE, message=FALSE}
+ggsave(here::here("output/abundance_time/abundances_selected_cumbres.pdf"),
+       width = 14, height = 10, units = "cm")
+print(plot_cumbres)
+dev.off()
+```
+
+```{r, echo=FALSE, message=FALSE}
+ggsave(here::here("output/abundance_time/abundances_selected_enebral.pdf"),
+       width = 20, height = 10, units = "cm")
+print(plot_enebral)
+dev.off()
+```
+
+
+```{r, echo=FALSE, message=FALSE}
+ggsave(here::here("output/abundance_time/abundances_selected_robledal.pdf"),
+       width = 27, height = 15, units = "cm")
+print(plot_robledal)
+dev.off()
+```
 
 
 

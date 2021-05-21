@@ -18,6 +18,7 @@ library("tidyverse")
 library("here")
 library("DT")
 library("patchwork")
+library("facetscales")
 ```
 
 
@@ -239,12 +240,18 @@ passerine_abtotal %>%
 Si exploramos la abundacia en los tres momentos temporales obtenemos un patrón similar: 
 
 ```{r, echo=FALSE, fig.width=3}
+scales_y <- list(
+  cumbres = scale_y_continuous(limits = c(0,10)),
+  enebral = scale_y_continuous(limits = c(0,35)),
+  robledal = scale_y_continuous(limits = c(0,110))
+)
+
 plot.abundance <- passerine_abtotal_compare %>% 
   ggplot(aes(x=as.factor(yearF), y=abtotalavg)) + 
   geom_bar(stat="identity", position = "dodge2", fill="gray") + 
   geom_errorbar(aes(ymax = abtotalavg + sd, ymin= abtotalavg - sd), 
                 width = .2, size = .3, color="gray") + 
-  facet_wrap(~habitat, nrow=3) + 
+  facet_grid_sc(rows = vars(habitat), scales=list(y=scales_y)) + 
   theme_bw() + 
   theme(
     panel.grid = element_blank(),
@@ -415,11 +422,17 @@ plot.tbi <- tbi_wide %>%
 # p1 <- plot.tbi + plot.turnover 
 # q <- plot.tbi + plot.turnover + plot.shannon + plot.richness + plot.abundance
 compose_plot <- plot.tbi + plot.turnover + plot.shannon + plot.richness + plot.abundance + plot_layout(ncol= 5, widths = c(1.2,2,.8,.8,.8))
+
+compose_plot <- plot.tbi + plot.turnover + plot.abundance + plot_layout(ncol= 3, widths = c(1.2,1.8,1))
+
+
 ```
+
+
 
 ```{r, echo=FALSE, message=FALSE, warning=FALSE}
 ggsave(here::here("output/compose_plot.pdf"),
-       width =27, height = 21, units = "cm")
+       width =22, height = 21, units = "cm")
 compose_plot
 dev.off()
 ```
