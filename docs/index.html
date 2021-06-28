@@ -13,7 +13,7 @@
 
 <title>Home</title>
 
-<script src="site_libs/header-attrs-2.6.6/header-attrs.js"></script>
+<script src="site_libs/header-attrs-2.8/header-attrs.js"></script>
 <script src="site_libs/jquery-1.11.3/jquery.min.js"></script>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <link href="site_libs/bootstrap-3.3.5/css/yeti.min.css" rel="stylesheet" />
@@ -92,6 +92,9 @@ button.code-folding-btn:focus {
 }
 summary {
   display: list-item;
+}
+pre code {
+  padding: 0;
 }
 </style>
 
@@ -302,7 +305,7 @@ $(document).ready(function () {
 <div class="tab-content">
 <div id="summary" class="tab-pane fade in active">
 <p>
-<strong>Last updated:</strong> 2021-05-10
+<strong>Last updated:</strong> 2021-06-28
 </p>
 <p>
 <strong>Checks:</strong> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> 2 <span class="glyphicon glyphicon-exclamation-sign text-danger" aria-hidden="true"></span> 0
@@ -333,16 +336,16 @@ This reproducible <a href="http://rmarkdown.rstudio.com">R Markdown</a> analysis
 <div class="panel panel-default">
 <div class="panel-heading">
 <p class="panel-title">
-<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomajpelubooksndispersantestree90d430b9c0a9c5ea0ff2c87b5ad30b5f1556e88atargetblank90d430ba"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Repository version:</strong> <a href="https://github.com/ajpelu/booksn_dispersantes/tree/90d430b9c0a9c5ea0ff2c87b5ad30b5f1556e88a" target="_blank">90d430b</a> </a>
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomajpelubooksndispersantestree800d1171ebdec9b4d7aace4d6524777e627223fdtargetblank800d117a"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Repository version:</strong> <a href="https://github.com/ajpelu/booksn_dispersantes/tree/800d1171ebdec9b4d7aace4d6524777e627223fd" target="_blank">800d117</a> </a>
 </p>
 </div>
-<div id="strongRepositoryversionstrongahrefhttpsgithubcomajpelubooksndispersantestree90d430b9c0a9c5ea0ff2c87b5ad30b5f1556e88atargetblank90d430ba" class="panel-collapse collapse">
+<div id="strongRepositoryversionstrongahrefhttpsgithubcomajpelubooksndispersantestree800d1171ebdec9b4d7aace4d6524777e627223fdtargetblank800d117a" class="panel-collapse collapse">
 <div class="panel-body">
 <p>
 Great! You are using Git for version control. Tracking code development and connecting the code version to the results is critical for reproducibility.
 </p>
 <p>
-The results in this page were generated with repository version <a href="https://github.com/ajpelu/booksn_dispersantes/tree/90d430b9c0a9c5ea0ff2c87b5ad30b5f1556e88a" target="_blank">90d430b</a>. See the <em>Past versions</em> tab to see a history of the changes made to the R Markdown and HTML files.
+The results in this page were generated with repository version <a href="https://github.com/ajpelu/booksn_dispersantes/tree/800d1171ebdec9b4d7aace4d6524777e627223fd" target="_blank">800d117</a>. See the <em>Past versions</em> tab to see a history of the changes made to the R Markdown and HTML files.
 </p>
 <p>
 Note that you need to be careful to ensure that all relevant files for the analysis have been committed to Git prior to generating the results (you can use <code>wflow_publish</code> or <code>wflow_git_commit</code>). workflowr only checks the R Markdown file, but you know if there are other scripts or data files that it depends on. Below is the status of the Git repository when the results were generated:
@@ -353,17 +356,10 @@ Ignored files:
     Ignored:    .Rproj.user/
     Ignored:    data/.DS_Store
 
-Untracked files:
-    Untracked:  data/passerine_ab.csv
-    Untracked:  data/passerine_abbrev.csv
-
 Unstaged changes:
-    Deleted:    analysis/temporal-beta-diveristy.Rmd
-    Modified:   code/computeTBI.R
-    Modified:   data/birds.csv
-    Deleted:    data/data_raw/~$Aves_SN_meses_reproduccion.xlsx
-    Modified:   data/passerine.csv
-    Modified:   output/betadiversity/plot_betadiversity.pdf
+    Modified:   analysis/abundance.Rmd
+    Modified:   data/passerine_ab.csv
+    Modified:   output/mktrend/plot_mktrend.pdf
 
 </code></pre>
 <p>
@@ -402,6 +398,40 @@ Message
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/ajpelu/booksn_dispersantes/blob/800d1171ebdec9b4d7aace4d6524777e627223fd/analysis/index.Rmd" target="_blank">800d117</a>
+</td>
+<td>
+Antonio J Perez-Luque
+</td>
+<td>
+2021-06-28
+</td>
+<td>
+wflow_publish(“analysis/index.Rmd”)
+</td>
+</tr>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/ajpelu/booksn_dispersantes/3bd7d8b3fa8b80f2b0eeacba8b8b32eebd6fc307/docs/index.html" target="_blank">3bd7d8b</a>
+</td>
+<td>
+Antonio J Perez-Luque
+</td>
+<td>
+2021-05-10
+</td>
+<td>
+Build site.
+</td>
+</tr>
 <tr>
 <td>
 Rmd
@@ -895,6 +925,7 @@ Start workflowr project.
 <li><p>Explore <a href="abundance.html"><strong>abundance</strong></a>.</p></li>
 <li><p><a href="turnover.html"><strong>Turnover analysis</strong></a>.</p></li>
 <li><p>A <a href="report.html"><strong>report</strong></a> with main of the results obtained.</p></li>
+<li><p>Analysis of <a href="arrendajo_mirlo.html"><em>Garrulus glandarius</em> and <em>Turdus torquatus</em></a></p></li>
 </ul>
 
 
