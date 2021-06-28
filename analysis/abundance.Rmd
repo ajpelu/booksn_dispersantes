@@ -38,7 +38,7 @@ passerine.ab <- passerine %>%
 
 passerine_abtotal <- passerine.ab %>% 
   group_by(year, habitat) %>% 
-  summarise(abtotal = round(mean(ab_avg, na.rm=TRUE),2), 
+  summarise(abtotal = round(sum(ab_avg, na.rm=TRUE),2), 
             sd = sd(ab_avg, na.rm = TRUE), 
             se = sd/sqrt(length(ab_avg)))
 
@@ -87,7 +87,7 @@ passerine_abtotal_compare %>%
   geom_bar(stat="identity", position = "dodge2", fill="gray") + 
   geom_errorbar(aes(ymax = abtotalavg + sd, ymin= abtotalavg - sd), 
                 width = .2, size = .3, color="gray") + 
-  facet_wrap(~habitat, nrow=3) + 
+  facet_wrap(~habitat, nrow=3, scales="free_y") + 
   theme_bw() + 
   theme(
     panel.grid = element_blank(),

@@ -3,7 +3,6 @@ Car.can,1982,cumbres,1.38,1.4361406616345072,0.7180703308172536,4,1,Carduelis ca
 Car.can,2012,cumbres,2.5,0.8838834764831844,0.625,2,1.8115942028985508,Carduelis cannabina
 Car.can,2014,cumbres,0.62,NA,NA,1,0.44927536231884063,Carduelis cannabina
 Car.can,2016,cumbres,1.25,NA,NA,1,0.9057971014492754,Carduelis cannabina
-Del.urb,1982,cumbres,0.5,NA,NA,1,1,Delichon urbicum
 Mot.cin,2015,cumbres,1.25,NA,NA,1,1,Motacilla cinerea
 Oen.oen,1982,cumbres,0.75,0.4183300132670378,0.17078251276599332,6,1,Oenanthe oenanthe
 Oen.oen,2008,cumbres,0.62,0,0,2,0.8266666666666667,Oenanthe oenanthe
@@ -35,7 +34,6 @@ Pru.col,2016,cumbres,1.87,1.7677669529663689,1.25,2,0.7192307692307692,Prunella 
 Pru.col,2017,cumbres,1.87,0,0,2,0.7192307692307692,Prunella collaris
 Pru.col,2018,cumbres,2.5,NA,NA,1,0.9615384615384615,Prunella collaris
 Pru.mod,2008,cumbres,0.62,NA,NA,1,1,Prunella modularis
-Pty.rup,1982,cumbres,0.5,NA,NA,1,1,Ptyonoprogne rupestris
 Ala.arv,1984,enebral,4.25,1.625146147274146,0.5417153824247153,9,1,Alauda arvensis
 Ala.arv,1985,enebral,5.4,0.30000000000000027,0.1732050807568879,3,1.2705882352941178,Alauda arvensis
 Ala.arv,2008,enebral,3.86,1.4499758618680518,0.6484489185741618,5,0.908235294117647,Alauda arvensis
@@ -77,7 +75,6 @@ Car.can,2017,enebral,1.21,0.6050068870131425,0.34930088907861534,3,0.48015873015
 Car.can,2018,enebral,1.81,0.8485281374238571,0.6,2,0.7182539682539683,Carduelis cannabina
 Car.car,1985,enebral,0.03,0.05773502691896258,0.03333333333333334,3,1,Carduelis carduelis
 Cuc.can,2015,enebral,0.6,NA,NA,1,1,Cuculus canorus
-Del.urb,1984,enebral,0.98,0,0,2,1,Delichon urbicum
 Emb.cia,1984,enebral,5.12,4.125549795010492,1.3751832650034972,9,1,Emberiza cia
 Emb.cia,1985,enebral,6.93,1.9857828011475305,1.1464922347946558,3,1.353515625,Emberiza cia
 Emb.cia,2008,enebral,3.32,2.2124353097887406,0.9032229329831406,6,0.6484375,Emberiza cia
@@ -132,7 +129,6 @@ Pru.col,2018,enebral,0.6,NA,NA,1,0.6122448979591837,Prunella collaris
 Pru.mod,2008,enebral,0.6,NA,NA,1,1,Prunella modularis
 Pru.mod,2010,enebral,0.6,NA,NA,1,1,Prunella modularis
 Pru.mod,2015,enebral,0.6,NA,NA,1,1,Prunella modularis
-Pty.rup,1984,enebral,0.98,NA,NA,1,1,Ptyonoprogne rupestris
 Sax.rub,2008,enebral,0.6,NA,NA,1,1,Saxicola rubetra
 Sax.rub,2008,enebral,0.6,NA,NA,1,1,Saxicola rubicola
 Sax.rub,2009,enebral,1.21,NA,NA,1,2.0166666666666666,Saxicola rubetra
