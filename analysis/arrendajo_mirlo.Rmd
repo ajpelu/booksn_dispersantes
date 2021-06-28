@@ -1,0 +1,250 @@
+---
+title: "arrendajo_mirlo"
+author: "Antonio J Perez-Luque"
+date: "2021-06-23"
+output: workflowr::wflow_html
+editor_options:
+  chunk_output_type: console
+---
+
+## Objetivo
+-  Comparar datos mensuales de abundancia de *Garrulus glandarius* y *Torquatus viscivorus* para los periodos de dispersión de semillas (septiembre, octubre y noviembre)
+
+## Arrendado
+### Prepara datos de Arrendajo por mes 
+
+```{r, echo = FALSE, message=FALSE, warning=FALSE}
+library("tidyverse")
+library("here")
+library("car")
+library("report")
+library("plotrix")
+library("broom")
+library("kableExtra")
+library(ggstatsplot)
+library(statsExpressions)
+library(plotrix) #std.error 
+library("flextable")
+library(plotrix)
+library("ggsci")
+```
+
+
+*Obsnev bird censuses* provided by [*OBSNEV*](https://obsnev.es/), realized in several transects distributed along Sierra Nevada. Temporal range from 2008 to 2020. The data were downloaded from new information system of OBSNEV (*i.e.* PostgreSQL [db01.obsnev.es](db01.obsnev.es))
+  
+
+- Raw data were downloaded from OBSNEV information system. The downloaded tables were: 
+`contactos_paseriformes.csv`; `dicc_especies.csv`; `geo.csv`; `visitas.csv`. 
+
+- The protocol sampling number for passerine in the database is 5. 
+
+- Select the two locations: "Cortijo del Hornillo" (SANJUAN), "Robledal de Canar" (CANAR)
+
+- Select only the taxonomic level = species (level > 6) 
+
+- Filter out data contacted over 30 m 
+
+```{r read-obsnev-tables}
+contactos <- read_csv(here::here("data/data_raw/contactos_paseriformes.csv")) %>% 
+  dplyr::select(-fcreacion, -fmodificacion)
+
+dicc_sp <- read_csv(here::here("data/data_raw/dicc_especies.csv")) %>% 
+  dplyr::select(idesp, nombre_cientifico, nivel)
+
+# El protocolo de paseriformes es el 5
+dicc_visita <- read_csv(here::here("data/data_raw/visitas.csv"), 
+                        col_types = 
+                          cols(.default ="?", 
+                               idgeo = col_character(), 
+                               fvisita = col_datetime(format="%Y-%m-%d %H:%M:%S"))) %>%
+  filter(protocolo == 5) 
+  
+dicc_geo <- read_csv(here::here("data/data_raw/geo.csv"), 
+                     col_types = cols(.default ="?", 
+                               longitud_m = col_double()))
+
+visita_geo <- 
+  dicc_visita %>% inner_join(dicc_geo, by = "idgeo") %>% 
+  dplyr::select(idvisitas, fvisita, nombre, longitud_m) 
+
+dfraw <- contactos %>% 
+  inner_join(visita_geo, by = "idvisitas") %>% 
+  inner_join(dicc_sp, by = "idesp") %>% 
+  mutate(year = lubridate::year(fvisita), 
+         mes = lubridate::month(fvisita))
+
+df <- dfraw %>% 
+  filter(nombre %in% c("Cortijo del Hornillo", "Robledal de Cáñar")) %>% 
+  mutate(habitat = case_when(
+    stringr::str_detect(nombre, "Hornillo") ~ "SANJUAN",
+    stringr::str_detect(nombre, "Cáñar") ~ "CANAR")) %>% 
+  mutate(year = lubridate::year(fvisita), 
+         mes = lubridate::month(fvisita),
+         fecha = strftime(fvisita, format="%Y-%m-%d")) %>% 
+  filter(nivel > 6) %>% 
+  filter(desplazamiento < 31)
+
+```
+
+
+- Aggregated data to get the sum of all contacts for a specie recorded in the same visit of the same transect
+
+- Select data from month = 9, 10, 11 
+
+```{r, compute-abundance-obsnev}
+garrulus <- df %>% 
+  filter(nombre_cientifico == "Garrulus glandarius") %>% 
+  group_by(fecha, year, mes, longitud_m, nombre, habitat, nivel) %>%
+  summarise(total_ind = sum(numero)) %>%  
+  mutate(den = round((total_ind * 10000 * 10 / (longitud_m * 60)),2)) %>% 
+  ungroup() %>% 
+  rename(localidad = habitat) %>% 
+  dplyr::select(-nivel, -longitud_m, -nombre, -total_ind, -fecha) %>% 
+  filter(mes %in% c(9,10,11)) %>% 
+  filter(year > 2007)
+  
+dataRZ <- data.frame(year = rep(1984,3),
+                    mes = c(9,10,11), 
+                    localidad = rep("SANJUAN", 3),
+                    den = c(2.7,1.5,1.5))
+
+garrulus_all <- bind_rows(garrulus, dataRZ)
+```
+
+
+```{r}
+garrulus %>% filter(localidad == "SANJUAN") %>% 
+  ggplot(aes(x=year, y=den, fill=as.factor(mes))) + 
+  geom_bar(stat="identity", position = position_dodge(.9))
+  
+garrulus_mean <- garrulus %>% 
+  group_by(mes, localidad) %>% 
+  summarize(den_avg = mean(den, na.rm=TRUE), 
+            den_sd = sd(den, na.rm = TRUE), 
+            den_se = std.error(den, na.rm=TRUE)) %>% 
+  mutate(date = "2008-2018") 
+
+
+dataRZ_mean <- data.frame(date = rep("1984",3),
+                    mes = c(9,10,11), 
+                    localidad = rep("SANJUAN", 3),
+                    den_avg = c(2.7,1.5,1.5),
+                    den_sd = NA, den_se=NA)
+
+
+compare_garrulus <- bind_rows(garrulus_mean, dataRZ_mean)
+```
+
+Plot 
+
+```{r}
+pos <- position_dodge(0.9)
+
+ab_garrulus <- compare_garrulus %>% 
+  mutate(mes = factor(mes, levels = c("9","10","11"))) %>% 
+  filter(localidad == "SANJUAN") %>% 
+  ggplot(aes(x=date, y=den_avg, 
+             fill= mes, color = mes)) + 
+  # geom_point(position = pos) + 
+  geom_bar(stat="identity", position = pos, width = .8) +
+  geom_errorbar(aes(ymin=den_avg - den_se, ymax = den_avg + den_se), 
+                position = position_dodge(0.9), width = .5) + 
+  ylab("Abundance (Birds/10ha)") + xlab("") + 
+  ylim(0,3) + 
+  theme_bw() +
+  scale_fill_jco() +
+  scale_color_jco() +
+  theme(panel.grid = element_blank(),
+         plot.title = element_text(face="italic")) +
+  ggtitle("Garrulus glandarius") +
+  guides(col=guide_legend("month"),
+         fill=guide_legend("month"))
+```
+
+
+## Torcuatus data 
+
+```{r}
+df_turdus <- dfraw %>% 
+  mutate(year = lubridate::year(fvisita), 
+         mes = lubridate::month(fvisita),
+         fecha = strftime(fvisita, format="%Y-%m-%d")) %>% 
+  filter(nivel > 6) %>% 
+  filter(desplazamiento < 31) %>% 
+  filter(nombre_cientifico == "Turdus torquatus") 
+
+# n Campos de Otero = 22 
+
+turdus <- df_turdus %>% 
+  filter(nombre == "Campos de Otero") %>% 
+  group_by(fecha, year, mes, longitud_m, nombre, nivel) %>%
+  summarise(total_ind = sum(numero)) %>%  
+  mutate(den = round((total_ind * 10000 * 10 / (longitud_m * 60)),2)) %>% 
+  ungroup() %>% 
+  dplyr::select(-nivel, -longitud_m, -nombre, -total_ind, -fecha) %>% 
+  filter(mes %in% c(9,10,11)) %>% 
+  filter(year > 2007) %>% 
+  mutate(date = "2008-2018")
+
+
+turdus_old <- data.frame(
+  year = c(1984, 1984, 1984, 1985, 1985),
+  mes = c(9, 10, 11, 10, 11),
+  den = c(0.1, 2.6, 8.7, 3.6, 9.8),
+  date = rep("1984-1985",5)
+)
+  
+turdus_all <- bind_rows(turdus, turdus_old)  
+  
+turdus_avg <- turdus_all %>% 
+  group_by(mes, date) %>% 
+  summarize(den_avg = mean(den, na.rm=TRUE), 
+            den_sd = sd(den, na.rm = TRUE), 
+            den_se = std.error(den, na.rm=TRUE))
+  
+  
+pos <- position_dodge(0.9)
+
+ab_turdus <- turdus_avg %>% 
+  mutate(mes = factor(mes, levels = c("9","10","11"))) %>% 
+  ggplot(aes(x=date, y=den_avg, 
+             fill= mes, color = mes)) + 
+  # geom_point(position = pos) + 
+  geom_bar(stat="identity", position = pos, width = .8) +
+  geom_errorbar(aes(ymin=den_avg - den_se, ymax = den_avg + den_se), 
+                position = position_dodge(0.9), width = .5) + 
+  ylab("Abundance (Birds/10ha)") + xlab("") + 
+  theme_bw() +
+  scale_fill_jco() +
+  scale_color_jco() +
+  theme(panel.grid = element_blank(), 
+        plot.title = element_text(face="italic")) +
+  ggtitle("Turdus torquatus") + 
+  guides(col=guide_legend("month"),
+         fill=guide_legend("month"))
+
+
+```
+
+
+```{r}
+library(patchwork)
+gar_tor <- ab_turdus + ab_garrulus &
+  theme(legend.position = "bottom") 
+garrulus_torquatus <- gar_tor +  plot_layout(ncol=1, guides = "collect") 
+```
+
+```{r}
+garrulus_torquatus
+```
+
+```{r}
+ggsave(here::here("output/garrulus_torquatus.pdf"),
+       width =10, height = 15, units = "cm")
+gar_tor
+dev.off()
+```
+
+
+
+
